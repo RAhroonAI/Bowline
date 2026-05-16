@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: "Bowline",
   description: "The daily checklist for bareboat chartering.",
   applicationName: "Bowline",
+  authors: [{ name: "Richard Ahroon" }],
   manifest: "/manifest.json",
   icons: {
     apple: "/apple-touch-icon.png",
@@ -29,6 +30,7 @@ export const metadata: Metadata = {
   },
   other: {
     "apple-mobile-web-app-capable": "yes",
+    copyright: "© 2026 Richard Ahroon",
   },
 };
 
@@ -45,7 +47,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
-      <body className="min-h-screen font-sans antialiased">{children}</body>
+      <body className="min-h-screen font-sans antialiased">
+        {children}
+        <footer className="px-6 py-10 text-center text-sm leading-relaxed text-ink/55">
+          <p className="mx-auto max-w-md">
+            Built by Richard Ahroon · almost a weekend sailor, girl dad,
+            doctor ·{" "}
+            <a
+              href="mailto:richard@floviken.se"
+              className="border-b border-ink/20 pb-px transition hover:border-ink/40 hover:text-ink/80"
+            >
+              richard@floviken.se
+            </a>
+          </p>
+        </footer>
+      </body>
     </html>
   );
 }
