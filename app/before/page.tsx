@@ -4,9 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import FlowHeader from "@/components/FlowHeader";
 import ForecastBanner from "@/components/ForecastBanner";
 import LocationRequired from "@/components/LocationRequired";
-import FlatChecklist from "@/components/FlatChecklist";
+import ChecklistRow from "@/components/ChecklistRow";
 import DoneFooter from "@/components/DoneFooter";
-import { beforeItems } from "@/lib/checklists";
+import { beforeSections } from "@/lib/checklists";
 import { readState, toggleItem } from "@/lib/storage";
 import type { BowlineState, Forecast } from "@/lib/types";
 
@@ -30,9 +30,14 @@ export default function BeforePage() {
   );
 
   const counts = useMemo(() => {
-    const total = beforeItems.length;
+    let total = 0;
     let done = 0;
-    for (const it of beforeItems) if (completedSet.has(it.id)) done += 1;
+    for (const section of beforeSections) {
+      for (const item of section.items) {
+        total += 1;
+        if (completedSet.has(item.id)) done += 1;
+      }
+    }
     return { total, done };
   }, [completedSet]);
 
@@ -54,13 +59,28 @@ export default function BeforePage() {
         windowDuration={12}
       />
 
-      <div className="mt-6">
-        <FlatChecklist
-          items={beforeItems}
-          conditionals={[]}
-          completed={completedSet}
-          onToggle={onToggle}
-        />
+      <div className="mt-6 flex flex-col gap-4">
+        {beforeSections.map((section) => (
+          <section
+            key={section.id}
+            className="rounded-2xl bg-white/80 p-5 shadow-card backdrop-blur-sm"
+          >
+            <header className="mb-3">
+              <h2 className="font-serif text-xl text-ink">{section.name}</h2>
+            </header>
+            <div className="flex flex-col divide-y divide-sand-200/80">
+              {section.items.map((item) => (
+                <ChecklistRow
+                  key={item.id}
+                  id={item.id}
+                  text={item.text}
+                  done={completedSet.has(item.id)}
+                  onToggle={onToggle}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
 
       <DoneFooter total={counts.total} done={counts.done} />

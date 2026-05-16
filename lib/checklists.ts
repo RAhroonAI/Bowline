@@ -194,12 +194,104 @@ export const dailySystems: SystemGroup[] = [
   },
 ];
 
-export const beforeItems: ChecklistItem[] = [
-  { id: "before_stow_gear", text: "Stow gear." },
-  { id: "before_hatches", text: "Secure hatches and portlights." },
+export type BeforeSection = {
+  id: string;
+  name: string;
+  items: ChecklistItem[];
+};
+
+export const beforeSections: BeforeSection[] = [
   {
-    id: "before_electrical",
-    text: "Secure non-essential electrical systems.",
+    id: "crew",
+    name: "Crew and personal safety",
+    items: [
+      {
+        id: "before_crew_pfds",
+        text: "PFDs on every crew member, properly fitted.",
+      },
+      {
+        id: "before_crew_children",
+        text: "Children seated and briefed for departure — where they sit, what they hold onto.",
+      },
+      {
+        id: "before_crew_briefed",
+        text: "Crew briefed on departure plan — who handles which line, where fenders go, helm intentions.",
+      },
+      {
+        id: "before_crew_airhorn",
+        text: "Crew know the location of the air horn and how to use it.",
+      },
+      {
+        id: "before_crew_throwables",
+        text: "Crew know the location of throwable PFDs and the life ring.",
+      },
+      {
+        id: "before_crew_loose_items",
+        text: "Phones, cameras, and loose items stowed or secured.",
+      },
+    ],
+  },
+  {
+    id: "boat",
+    name: "Boat readiness",
+    items: [
+      { id: "before_boat_stow_gear", text: "Stow gear in the cabin." },
+      { id: "before_boat_hatches", text: "Secure hatches and portlights." },
+      {
+        id: "before_boat_electrical",
+        text: "Secure non-essential electrical systems.",
+      },
+      {
+        id: "before_boat_fenders",
+        text: "Fenders in position for direction of departure and the dock side.",
+      },
+      {
+        id: "before_boat_lines",
+        text: "Lines flaked and ready to come aboard in the order they release.",
+      },
+      {
+        id: "before_boat_spring",
+        text: "Spring line strategy briefed if needed.",
+      },
+      {
+        id: "before_boat_helm",
+        text: "Helm centered, transmission in neutral.",
+      },
+      {
+        id: "before_boat_throttle",
+        text: "Throttle response checked — forward, neutral, reverse at the dock.",
+      },
+    ],
+  },
+  {
+    id: "situational",
+    name: "Situational awareness",
+    items: [
+      {
+        id: "before_situational_dock_walk",
+        text: "Walk the dock — fairway clear in both directions, no traffic approaching, no lines or dinghy painters in the water.",
+      },
+      {
+        id: "before_situational_wind",
+        text: "Wind direction and speed at the dock confirmed — may differ from the marina forecast.",
+      },
+      {
+        id: "before_situational_tide",
+        text: "Current and tide at the dock noted if relevant.",
+      },
+      {
+        id: "before_situational_vhf",
+        text: "VHF on, monitoring channel 16 and any local marina channel.",
+      },
+      {
+        id: "before_situational_chartplotter",
+        text: "Chart plotter on, current position visible, departure route loaded.",
+      },
+      {
+        id: "before_situational_visual_check",
+        text: "Visual check around the boat for any lines or debris near the prop.",
+      },
+    ],
   },
 ];
 
