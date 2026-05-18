@@ -1,169 +1,96 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { MapPin, Sunrise, Sailboat, Moon, RotateCcw } from "lucide-react";
-import { readState, resetDay } from "@/lib/storage";
-import type { BowlineState } from "@/lib/types";
+import { WatercolorBowline } from "@/components/WatercolorBowline";
+import { WatercolorVarverb } from "@/components/WatercolorVarverb";
 
-export default function Home() {
-  const [state, setState] = useState<BowlineState | null>(null);
-  const [showReset, setShowReset] = useState(false);
-
-  useEffect(() => {
-    setState(readState());
-  }, []);
-
-  if (!state) {
-    return <main className="min-h-screen" aria-hidden />;
-  }
-
-  const completedCount =
-    state.daily.completed.length +
-    state.before.completed.length +
-    state.after.completed.length;
-
+export default function SagavikHub() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-12">
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-16">
       <header className="text-center">
-        <div
-          className="mx-auto h-px w-12 bg-terra/60"
-          aria-hidden
-        />
-        <h1 className="mt-5 font-serif text-5xl text-ink tracking-tight">
-          Bowline
+        <div className="mx-auto h-px w-12 bg-terra/60" aria-hidden />
+        <h1 className="mt-6 font-serif text-5xl text-ink tracking-tight sm:text-6xl">
+          Sagavik
         </h1>
-        <p className="mt-3 text-ink/60">
-          The daily checklist for bareboat chartering.
+        <p className="mt-4 text-base text-ink/60">
+          A small workshop of personal projects.
         </p>
       </header>
 
-      <nav className="mt-12 flex flex-col gap-3">
-        <FlowButton
-          href="/daily"
-          icon={<Sunrise className="h-6 w-6" />}
-          label="Daily Checklist"
-          sub="Open before you do anything else."
-          locked={!state.location}
+      <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <ProjectTile
+          href="/bowline"
+          tag="01 · Sailing"
+          title="Bowline"
+          oneLiner="The daily checklist for bareboat chartering."
+          art={<WatercolorBowline />}
         />
-        <FlowButton
-          href="/before"
-          icon={<Sailboat className="h-6 w-6" />}
-          label="Before Getting Under Way"
-          sub="The short list before lines off."
-          locked={!state.location}
+        <ProjectTile
+          href="https://varverb.sagavik.se"
+          tag="02 · Språk"
+          title="Vårverb"
+          oneLiner="Swedish verb practice for the B1 list."
+          art={<WatercolorVarverb />}
+          external
         />
-        <FlowButton
-          href="/after"
-          icon={<Moon className="h-6 w-6" />}
-          label="After the Day's Sail"
-          sub="Secured at anchor, mooring or dock."
-          locked={!state.location}
-        />
-      </nav>
-
-      <section className="mt-10 rounded-2xl border border-sand-300/70 bg-white/70 p-4 shadow-card">
-        <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-sea/10 text-sea-600">
-            <MapPin className="h-5 w-5" strokeWidth={1.6} />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-ink/50">
-              Location
-            </p>
-            <p className="truncate font-serif text-lg text-ink">
-              {state.location ? state.location.name : "Not set"}
-            </p>
-          </div>
-          <Link
-            href="/location"
-            className="rounded-full border border-ink/15 px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-ink/70 transition hover:border-ink/30 hover:text-ink"
-          >
-            {state.location ? "Change" : "Set"}
-          </Link>
-        </div>
-      </section>
-
-      <div className="mt-auto pt-12 text-center">
-        {showReset ? (
-          <div className="mx-auto max-w-xs rounded-2xl border border-terra/40 bg-white/90 p-5 shadow-card">
-            <p className="font-serif text-lg text-ink">Reset today's lists?</p>
-            <p className="mt-1 text-sm text-ink/60">
-              Clears completed items in all three flows. Location stays.
-            </p>
-            <div className="mt-4 flex gap-2">
-              <button
-                onClick={() => setShowReset(false)}
-                className="flex-1 rounded-full border border-ink/15 py-2.5 text-sm text-ink/70 hover:bg-sand-200"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  setState(resetDay());
-                  setShowReset(false);
-                }}
-                className="flex-1 rounded-full bg-terra py-2.5 text-sm font-medium text-white hover:bg-terra-600"
-              >
-                Reset
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowReset(true)}
-            className="inline-flex items-center gap-1.5 text-xs font-medium uppercase tracking-wider text-ink/40 hover:text-ink/70"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            Reset day{completedCount > 0 ? ` (${completedCount})` : ""}
-          </button>
-        )}
       </div>
+
+      <p className="mt-16 text-center text-xs uppercase tracking-[0.22em] text-ink/40">
+        Floviken
+        <span className="mx-2 text-ink/20">·</span>
+        <a
+          href="https://floviken.se"
+          className="border-b border-ink/15 pb-px transition hover:border-ink/40 hover:text-ink/70"
+        >
+          Clinical AI work
+        </a>
+      </p>
     </main>
   );
 }
 
-function FlowButton({
+function ProjectTile({
   href,
-  icon,
-  label,
-  sub,
-  locked,
+  tag,
+  title,
+  oneLiner,
+  art,
+  external,
 }: {
   href: string;
-  icon: React.ReactNode;
-  label: string;
-  sub: string;
-  locked: boolean;
+  tag: string;
+  title: string;
+  oneLiner: string;
+  art: React.ReactNode;
+  external?: boolean;
 }) {
   const className =
-    "group flex items-center gap-4 rounded-2xl border border-ink/10 bg-white px-5 py-5 text-left shadow-card transition hover:border-terra/40 hover:shadow-cardHover";
+    "group block overflow-hidden rounded-2xl border border-ink/10 bg-white shadow-card transition hover:border-ink/20 hover:shadow-cardHover";
   const inner = (
     <>
-      <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-terra-50 text-terra-600 transition group-hover:bg-terra group-hover:text-white">
-        {icon}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-serif text-lg text-ink leading-tight">
-          {label}
-        </span>
-        <span className="mt-0.5 block text-sm text-ink/55">{sub}</span>
-      </span>
+      <div className="relative aspect-[5/4] w-full overflow-hidden bg-sand-200">
+        {art}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/15 via-transparent to-transparent" />
+      </div>
+      <div className="px-5 py-5">
+        <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-terra-600">
+          {tag}
+        </p>
+        <h2 className="mt-2 font-serif text-2xl text-ink leading-tight">
+          {title}
+        </h2>
+        <p className="mt-1.5 text-sm leading-relaxed text-ink/60">
+          {oneLiner}
+        </p>
+      </div>
     </>
   );
 
-  if (locked) {
+  if (external) {
     return (
-      <Link
-        href="/location"
-        className={`${className} opacity-80`}
-        title="Set a location first"
-      >
+      <a href={href} className={className} target="_blank" rel="noopener noreferrer">
         {inner}
-      </Link>
+      </a>
     );
   }
-
   return (
     <Link href={href} className={className}>
       {inner}

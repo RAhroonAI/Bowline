@@ -91,7 +91,7 @@ export default function LocationPage() {
   return (
     <main className="mx-auto min-h-screen max-w-md px-6 py-10">
       <Link
-        href="/"
+        href="/bowline"
         className="inline-flex items-center gap-1.5 text-sm text-ink/60 hover:text-ink"
       >
         <ArrowLeft className="h-4 w-4" />

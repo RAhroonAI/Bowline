@@ -14,7 +14,7 @@ export default function LocationRequired() {
         The forecast and conditional items both depend on where you are.
       </p>
       <Link
-        href="/location"
+        href="/bowline/location"
         className="mt-6 inline-flex h-12 items-center justify-center rounded-full bg-terra px-6 text-sm font-medium uppercase tracking-wider text-white transition hover:bg-terra-600"
       >
         Choose a port

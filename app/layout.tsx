@@ -15,9 +15,12 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Bowline",
-  description: "The daily checklist for bareboat chartering.",
-  applicationName: "Bowline",
+  title: {
+    default: "Sagavik",
+    template: "%s · Sagavik",
+  },
+  description: "A small workshop of personal projects by Richard Ahroon.",
+  applicationName: "Sagavik",
   authors: [{ name: "Richard Ahroon" }],
   manifest: "/manifest.json",
   icons: {
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "Bowline",
+    title: "Sagavik",
     statusBarStyle: "default",
   },
   other: {
