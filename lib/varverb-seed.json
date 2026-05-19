@@ -1,0 +1,552 @@
+[
+  {
+    "infinitive": "se",
+    "presens": "ser",
+    "preteritum": "såg",
+    "supinum": "sett",
+    "perfekt_particip": "-sedd",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "sitta",
+    "presens": "sitter",
+    "preteritum": "satt",
+    "supinum": "suttit",
+    "perfekt_particip": "",
+    "practice_count": 1,
+    "correct_count": 0,
+    "incorrect_count": 1
+  },
+  {
+    "infinitive": "sjunga",
+    "presens": "sjunger",
+    "preteritum": "sjöng",
+    "supinum": "sjungit",
+    "perfekt_particip": "sjungen",
+    "practice_count": 2,
+    "correct_count": 0,
+    "incorrect_count": 2
+  },
+  {
+    "infinitive": "sjunka",
+    "presens": "sjunker",
+    "preteritum": "sjönk",
+    "supinum": "sjunkit",
+    "perfekt_particip": "sjunken",
+    "practice_count": 2,
+    "correct_count": 0,
+    "incorrect_count": 2
+  },
+  {
+    "infinitive": "skola",
+    "presens": "ska/skall",
+    "preteritum": "skulle",
+    "supinum": "skolat",
+    "perfekt_particip": "",
+    "practice_count": 1,
+    "correct_count": 0,
+    "incorrect_count": 1
+  },
+  {
+    "infinitive": "skilja",
+    "presens": "skiljer",
+    "preteritum": "skilde",
+    "supinum": "skilt",
+    "perfekt_particip": "skild",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "skina",
+    "presens": "skiner",
+    "preteritum": "sken",
+    "supinum": "skinit",
+    "perfekt_particip": "",
+    "practice_count": 3,
+    "correct_count": 0,
+    "incorrect_count": 3
+  },
+  {
+    "infinitive": "skjuta",
+    "presens": "skjuter",
+    "preteritum": "sköt",
+    "supinum": "skjutit",
+    "perfekt_particip": "-skjuten",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "skrika",
+    "presens": "skriker",
+    "preteritum": "skrek",
+    "supinum": "skrikit",
+    "perfekt_particip": "-skriken",
+    "practice_count": 3,
+    "correct_count": 0,
+    "incorrect_count": 3
+  },
+  {
+    "infinitive": "skriva",
+    "presens": "skriver",
+    "preteritum": "skrev",
+    "supinum": "skrivit",
+    "perfekt_particip": "-skriven",
+    "practice_count": 1,
+    "correct_count": 0,
+    "incorrect_count": 1
+  },
+  {
+    "infinitive": "skryta",
+    "presens": "skryter",
+    "preteritum": "skröt",
+    "supinum": "skrutit",
+    "perfekt_particip": "-skruten",
+    "practice_count": 1,
+    "correct_count": 0,
+    "incorrect_count": 1
+  },
+  {
+    "infinitive": "skära",
+    "presens": "skär",
+    "preteritum": "skar",
+    "supinum": "skurit",
+    "perfekt_particip": "-skuren",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "slippa",
+    "presens": "slipper",
+    "preteritum": "slapp",
+    "supinum": "sluppit",
+    "perfekt_particip": "-sluppen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "slita",
+    "presens": "sliter",
+    "preteritum": "slet",
+    "supinum": "slitit",
+    "perfekt_particip": "-sliten",
+    "practice_count": 1,
+    "correct_count": 0,
+    "incorrect_count": 1
+  },
+  {
+    "infinitive": "slå",
+    "presens": "slår",
+    "preteritum": "slog",
+    "supinum": "slagit",
+    "perfekt_particip": "-slagen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "slåss",
+    "presens": "slåss",
+    "preteritum": "slogs",
+    "supinum": "slagits",
+    "perfekt_particip": "",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "smyga",
+    "presens": "smyger",
+    "preteritum": "smög",
+    "supinum": "smugit",
+    "perfekt_particip": "-smugen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "smörja",
+    "presens": "smörjer",
+    "preteritum": "smorde",
+    "supinum": "smort",
+    "perfekt_particip": "smord",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "snyta",
+    "presens": "snyter",
+    "preteritum": "snöt",
+    "supinum": "snutit",
+    "perfekt_particip": "snuten",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "sova",
+    "presens": "sover",
+    "preteritum": "sov",
+    "supinum": "sovit",
+    "perfekt_particip": "",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "spinna",
+    "presens": "spinner",
+    "preteritum": "spann",
+    "supinum": "spunnit",
+    "perfekt_particip": "spunnen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "spricka",
+    "presens": "spricker",
+    "preteritum": "sprack",
+    "supinum": "spruckit",
+    "perfekt_particip": "sprucken",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "sprida",
+    "presens": "sprider",
+    "preteritum": "spred/spridde",
+    "supinum": "spridit/spritt",
+    "perfekt_particip": "spridd",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "springa",
+    "presens": "springer",
+    "preteritum": "sprang",
+    "supinum": "sprungit",
+    "perfekt_particip": "sprungen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "sticka",
+    "presens": "sticker",
+    "preteritum": "stack",
+    "supinum": "stuckit",
+    "perfekt_particip": "stucken",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "stiga",
+    "presens": "stiger",
+    "preteritum": "steg",
+    "supinum": "stigit",
+    "perfekt_particip": "-stigen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "stjäla",
+    "presens": "stjäl",
+    "preteritum": "stal",
+    "supinum": "stulit",
+    "perfekt_particip": "-stulen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "strida",
+    "presens": "strider",
+    "preteritum": "stred",
+    "supinum": "stridit",
+    "perfekt_particip": "-stridd",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "stryka",
+    "presens": "stryker",
+    "preteritum": "strök",
+    "supinum": "strukit",
+    "perfekt_particip": "-struken",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "stå",
+    "presens": "står",
+    "preteritum": "stod",
+    "supinum": "stått",
+    "perfekt_particip": "-städ",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "suga",
+    "presens": "suger",
+    "preteritum": "sög",
+    "supinum": "sugit",
+    "perfekt_particip": "-sugen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "supa",
+    "presens": "super",
+    "preteritum": "söp",
+    "supinum": "supit",
+    "perfekt_particip": "-supen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "svida",
+    "presens": "svider",
+    "preteritum": "sved",
+    "supinum": "svidit",
+    "perfekt_particip": "",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "svika",
+    "presens": "sviker",
+    "preteritum": "svek",
+    "supinum": "svikit",
+    "perfekt_particip": "-sviken",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "välja",
+    "presens": "väljer",
+    "preteritum": "svalde",
+    "supinum": "svalti/svalte",
+    "perfekt_particip": "-svald",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "svälja",
+    "presens": "sväljer",
+    "preteritum": "svalde/svalte",
+    "supinum": "svalti/svalt",
+    "perfekt_particip": "-svald",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "sväva",
+    "presens": "svävar",
+    "preteritum": "svor",
+    "supinum": "svurit",
+    "perfekt_particip": "svuren",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "svära",
+    "presens": "svär",
+    "preteritum": "svor",
+    "supinum": "svurit",
+    "perfekt_particip": "svuren",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "säga",
+    "presens": "säger",
+    "preteritum": "sa/sade",
+    "supinum": "sagt",
+    "perfekt_particip": "sagd",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "sälja",
+    "presens": "säljer",
+    "preteritum": "sålde",
+    "supinum": "sålt",
+    "perfekt_particip": "såld",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "sätta",
+    "presens": "sätter",
+    "preteritum": "satte",
+    "supinum": "satt",
+    "perfekt_particip": "satt",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "ta",
+    "presens": "tar",
+    "preteritum": "tog",
+    "supinum": "tagit",
+    "perfekt_particip": "-tagen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "tiga",
+    "presens": "tiger",
+    "preteritum": "teg",
+    "supinum": "tigit",
+    "perfekt_particip": "-tegen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "tvinga",
+    "presens": "tvingar",
+    "preteritum": "tvang/tvingade",
+    "supinum": "tvungit/tvingat",
+    "perfekt_particip": "tvingad",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "toras",
+    "presens": "törs",
+    "preteritum": "tordes",
+    "supinum": "torts",
+    "perfekt_particip": "",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "vara",
+    "presens": "är",
+    "preteritum": "var",
+    "supinum": "varit",
+    "perfekt_particip": "",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "veta",
+    "presens": "vet",
+    "preteritum": "visste",
+    "supinum": "vetat",
+    "perfekt_particip": "",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "vika",
+    "presens": "viker",
+    "preteritum": "vek",
+    "supinum": "vikit/vikt",
+    "perfekt_particip": "viken/vikt",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "vilja",
+    "presens": "vill",
+    "preteritum": "ville",
+    "supinum": "velat",
+    "perfekt_particip": "",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "vinna",
+    "presens": "vinner",
+    "preteritum": "vann",
+    "supinum": "vunnit",
+    "perfekt_particip": "vunnen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "vrida",
+    "presens": "vrider",
+    "preteritum": "vred",
+    "supinum": "vridit",
+    "perfekt_particip": "vriden",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "välja",
+    "presens": "väljer",
+    "preteritum": "valde",
+    "supinum": "valt",
+    "perfekt_particip": "vald",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "vänja",
+    "presens": "vänjer",
+    "preteritum": "vande",
+    "supinum": "vant",
+    "perfekt_particip": "vand",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "växa",
+    "presens": "växer",
+    "preteritum": "växte",
+    "supinum": "växt/vuxit",
+    "perfekt_particip": "vuxen",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  },
+  {
+    "infinitive": "äta",
+    "presens": "äter",
+    "preteritum": "åt",
+    "supinum": "ätit",
+    "perfekt_particip": "-äten",
+    "practice_count": 0,
+    "correct_count": 0,
+    "incorrect_count": 0
+  }
+]

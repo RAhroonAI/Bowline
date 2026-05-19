@@ -24,12 +24,11 @@ export default function SagavikHub() {
           art={<WatercolorBowline />}
         />
         <ProjectTile
-          href="https://varverb.sagavik.se"
+          href="/varverb"
           tag="02 · Språk"
           title="Vårverb"
           oneLiner="Swedish verb practice for the B1 list."
           art={<WatercolorVarverb />}
-          external
         />
       </div>
 
