@@ -32,6 +32,7 @@ export default function VarverbPage() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [wrongAttempt, setWrongAttempt] = useState<{ grade: GradeResult; attempt: string } | null>(null);
 
   useEffect(() => {
     setVerbs(loadVerbs());
@@ -54,6 +55,7 @@ export default function VarverbPage() {
     setUserInput("");
     setChatHistory([]);
     setChatInput("");
+    setWrongAttempt(null);
     setLastVerb(verb.infinitive);
     try {
       const target_form = pickTargetForm(verb);
@@ -101,6 +103,7 @@ export default function VarverbPage() {
     setUserInput("");
     setChatHistory([]);
     setChatInput("");
+    setWrongAttempt(null);
     setError(null);
   }
 
@@ -151,7 +154,8 @@ export default function VarverbPage() {
 
   async function submitAnswer(e: React.FormEvent) {
     e.preventDefault();
-    if (!userInput.trim() || !activeVerb || !seed) return;
+    const attempt = userInput.trim();
+    if (!attempt || !activeVerb || !seed) return;
     setError(null);
     setLoading(true);
     try {
@@ -161,7 +165,7 @@ export default function VarverbPage() {
         body: JSON.stringify({
           verb: activeVerb,
           seed,
-          user_swedish: userInput.trim(),
+          user_swedish: attempt,
         }),
       });
       if (!res.ok) {
@@ -169,15 +173,33 @@ export default function VarverbPage() {
         throw new Error(data.error || `HTTP ${res.status}`);
       }
       const result = (await res.json()) as GradeResult;
-      setGrade(result);
-      setStage("graded");
-      const updated = recordPractice(activeVerb.infinitive, result.is_correct);
-      setVerbs(updated);
+      if (result.is_correct) {
+        setGrade(result);
+        setUserInput(attempt);
+        setWrongAttempt(null);
+        setStage("graded");
+        const updated = recordPractice(activeVerb.infinitive, true);
+        setVerbs(updated);
+      } else {
+        // Soft-wrong: don't reveal yet, let the user try again.
+        setWrongAttempt({ grade: result, attempt });
+        setUserInput("");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to grade");
     } finally {
       setLoading(false);
     }
+  }
+
+  function revealAnswer() {
+    if (!wrongAttempt || !activeVerb) return;
+    setGrade(wrongAttempt.grade);
+    setUserInput(wrongAttempt.attempt);
+    setStage("graded");
+    const updated = recordPractice(activeVerb.infinitive, false);
+    setVerbs(updated);
+    setWrongAttempt(null);
   }
 
   async function speakSwedish(text: string) {
@@ -244,6 +266,8 @@ export default function VarverbPage() {
           setUserInput={setUserInput}
           onSubmit={submitAnswer}
           loading={loading}
+          wrongAttempt={wrongAttempt?.attempt ?? null}
+          onReveal={revealAnswer}
         />
       )}
 
@@ -358,12 +382,16 @@ function ExerciseCard({
   setUserInput,
   onSubmit,
   loading,
+  wrongAttempt,
+  onReveal,
 }: {
   english: string;
   userInput: string;
   setUserInput: (v: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   loading: boolean;
+  wrongAttempt: string | null;
+  onReveal: () => void;
 }) {
   return (
     <>
@@ -373,6 +401,14 @@ function ExerciseCard({
         </p>
         <p className="mt-6 font-serif text-2xl text-ink leading-snug">{english}</p>
       </section>
+
+      {wrongAttempt && (
+        <div className="mx-auto mt-5 w-full max-w-md rounded-2xl border border-terra/30 bg-terra-50 px-5 py-3 text-center text-sm text-terra-600 animate-fadeIn">
+          ✗ Not quite. You wrote: <em className="text-ink/85">{wrongAttempt}</em>
+          <br />
+          <span className="text-xs text-ink/55">Try again, or reveal the answer below.</span>
+        </div>
+      )}
 
       <form onSubmit={onSubmit} className="mx-auto mt-6 w-full max-w-xs">
         <label className="sr-only" htmlFor="translation-input">
@@ -399,10 +435,21 @@ function ExerciseCard({
             <>
               <Spinner /> Grading…
             </>
+          ) : wrongAttempt ? (
+            "Check again"
           ) : (
             "Check"
           )}
         </button>
+        {wrongAttempt && (
+          <button
+            type="button"
+            onClick={onReveal}
+            className="mt-3 w-full text-center text-[11px] font-medium uppercase tracking-[0.18em] text-ink/45 transition hover:text-ink/70"
+          >
+            Show me the answer →
+          </button>
+        )}
       </form>
     </>
   );

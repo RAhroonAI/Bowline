@@ -31,6 +31,7 @@ export default function GlosorPage() {
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState<string>(ALL_CHAPTERS);
+  const [wrongAttempt, setWrongAttempt] = useState<{ grade: WordGradeResult; attempt: string } | null>(null);
 
   useEffect(() => {
     setGlosor(loadGlosor());
@@ -54,9 +55,9 @@ export default function GlosorPage() {
     setGrade(null);
     setChatHistory([]);
     setChatInput("");
+    setWrongAttempt(null);
     setLastGlosa(g.english);
     rememberGlosa(g.english);
-    // No API call needed to "start" — the word is already known. Done.
     setLoading(false);
   }
 
@@ -87,34 +88,54 @@ export default function GlosorPage() {
     setGrade(null);
     setChatHistory([]);
     setChatInput("");
+    setWrongAttempt(null);
     setError(null);
   }
 
   async function submitAnswer(e: React.FormEvent) {
     e.preventDefault();
-    if (!userInput.trim() || !active) return;
+    const attempt = userInput.trim();
+    if (!attempt || !active) return;
     setError(null);
     setLoading(true);
     try {
       const res = await fetch("/glosor/api/grade", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ glosa: active, user_swedish: userInput.trim() }),
+        body: JSON.stringify({ glosa: active, user_swedish: attempt }),
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         throw new Error(data.error || `HTTP ${res.status}`);
       }
       const result = (await res.json()) as WordGradeResult;
-      setGrade(result);
-      setStage("graded");
-      const updated = recordGlosaPractice(active.english, result.is_correct);
-      setGlosor(updated);
+      if (result.is_correct) {
+        setGrade(result);
+        setUserInput(attempt);
+        setWrongAttempt(null);
+        setStage("graded");
+        const updated = recordGlosaPractice(active.english, true);
+        setGlosor(updated);
+      } else {
+        // Soft-wrong: stay on the flashcard, let them try again.
+        setWrongAttempt({ grade: result, attempt });
+        setUserInput("");
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to grade");
     } finally {
       setLoading(false);
     }
+  }
+
+  function revealAnswer() {
+    if (!wrongAttempt || !active) return;
+    setGrade(wrongAttempt.grade);
+    setUserInput(wrongAttempt.attempt);
+    setStage("graded");
+    const updated = recordGlosaPractice(active.english, false);
+    setGlosor(updated);
+    setWrongAttempt(null);
   }
 
   async function sendChat(e: React.FormEvent) {
@@ -222,6 +243,8 @@ export default function GlosorPage() {
           setUserInput={setUserInput}
           onSubmit={submitAnswer}
           loading={loading}
+          wrongAttempt={wrongAttempt?.attempt ?? null}
+          onReveal={revealAnswer}
         />
       )}
 
@@ -328,12 +351,16 @@ function FlashCard({
   setUserInput,
   onSubmit,
   loading,
+  wrongAttempt,
+  onReveal,
 }: {
   english: string;
   userInput: string;
   setUserInput: (v: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   loading: boolean;
+  wrongAttempt: string | null;
+  onReveal: () => void;
 }) {
   return (
     <>
@@ -348,6 +375,14 @@ function FlashCard({
           {english}
         </p>
       </section>
+
+      {wrongAttempt && (
+        <div className="mx-auto mt-5 w-full max-w-md rounded-2xl border border-terra/30 bg-terra-50 px-5 py-3 text-center text-sm text-terra-600 animate-fadeIn">
+          ✗ Not quite. You wrote: <em className="text-ink/85">{wrongAttempt}</em>
+          <br />
+          <span className="text-xs text-ink/55">Try again, or reveal the answer below.</span>
+        </div>
+      )}
 
       <form onSubmit={onSubmit} className="mx-auto mt-6 w-full max-w-sm">
         <label className="sr-only" htmlFor="word-input">
@@ -374,10 +409,21 @@ function FlashCard({
             <>
               <Spinner /> Checking…
             </>
+          ) : wrongAttempt ? (
+            "Check again"
           ) : (
             "Check"
           )}
         </button>
+        {wrongAttempt && (
+          <button
+            type="button"
+            onClick={onReveal}
+            className="mt-3 w-full text-center text-[11px] font-medium uppercase tracking-[0.18em] text-ink/45 transition hover:text-ink/70"
+          >
+            Show me the answer →
+          </button>
+        )}
       </form>
     </>
   );
