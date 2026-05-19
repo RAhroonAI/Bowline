@@ -103,15 +103,37 @@ export function setLastGlosa(english: string): void {
 }
 
 export function pickNextGlosa(glosor: Glosa[], lastEnglish: string | null): Glosa {
-  const candidates = glosor.filter((g) => g.english !== lastEnglish);
-  const pool = candidates.length > 0 ? candidates : glosor;
-  const scored = [...pool].sort(
-    (a, b) =>
-      a.practice_count - a.incorrect_count * 2 - (b.practice_count - b.incorrect_count * 2),
-  );
-  const window = Math.max(5, Math.floor(scored.length / 4));
-  const top = scored.slice(0, window);
-  return top[Math.floor(Math.random() * top.length)];
+  if (glosor.length === 0) {
+    throw new Error("pickNextGlosa called with empty list");
+  }
+  const recent = new Set(getRecentGlosaEnglish());
+  if (lastEnglish) recent.add(lastEnglish);
+
+  // Build candidate pool: exclude recently-shown words if possible.
+  let candidates = glosor.filter((g) => !recent.has(g.english));
+  if (candidates.length === 0) {
+    candidates = glosor.filter((g) => g.english !== lastEnglish);
+    if (candidates.length === 0) candidates = glosor;
+  }
+
+  // Tier 1: untouched words first.
+  const untouched = candidates.filter((g) => g.practice_count === 0);
+  if (untouched.length > 0) {
+    return untouched[Math.floor(Math.random() * untouched.length)];
+  }
+
+  // Tier 2: weighted random favoring least-practiced + most-missed.
+  const weighted = candidates.map((g) => ({
+    glosa: g,
+    weight: 1 / (g.practice_count + 1) + g.incorrect_count * 0.75,
+  }));
+  const total = weighted.reduce((s, w) => s + w.weight, 0);
+  let r = Math.random() * total;
+  for (const w of weighted) {
+    r -= w.weight;
+    if (r <= 0) return w.glosa;
+  }
+  return weighted[weighted.length - 1].glosa;
 }
 
 export function getRecentGlosaEnglish(): string[] {

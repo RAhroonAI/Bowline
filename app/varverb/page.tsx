@@ -13,6 +13,7 @@ import {
   getLastVerb,
   getRecentSentences,
   rememberSentence,
+  rememberInfinitive,
 } from "@/lib/varverb/storage";
 import type { Verb, RoundSeed, GradeResult, TargetForm } from "@/lib/varverb/types";
 
@@ -102,6 +103,7 @@ export default function VarverbPage() {
     setConjugationInputs({ infinitive: "", presens: "", preteritum: "", supinum: "", perfekt_particip: "" });
     setConjugationResults(null);
     setLastVerb(verb.infinitive);
+    rememberInfinitive(verb.infinitive);
     try {
       const target_form = pickTargetForm(verb);
       const topic = pickTopic();

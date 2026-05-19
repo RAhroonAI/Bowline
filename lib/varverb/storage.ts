@@ -87,16 +87,61 @@ export function setLastVerb(infinitive: string): void {
   localStorage.setItem(LAST_VERB_KEY, infinitive);
 }
 
+const RECENT_VERBS_KEY = "varverb.recentInfinitives.v1";
+const MAX_RECENT_VERBS = 10;
+
+export function getRecentInfinitives(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(RECENT_VERBS_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as string[];
+  } catch {
+    return [];
+  }
+}
+
+export function rememberInfinitive(infinitive: string): void {
+  if (typeof window === "undefined") return;
+  const prev = getRecentInfinitives();
+  const next = [infinitive, ...prev.filter((s) => s !== infinitive)].slice(0, MAX_RECENT_VERBS);
+  localStorage.setItem(RECENT_VERBS_KEY, JSON.stringify(next));
+}
+
 export function pickNextVerb(verbs: Verb[], lastInfinitive: string | null): Verb {
-  const candidates = verbs.filter((v) => v.infinitive !== lastInfinitive);
-  const pool = candidates.length > 0 ? candidates : verbs;
-  const scored = [...pool].sort(
-    (a, b) =>
-      a.practice_count - a.incorrect_count * 2 - (b.practice_count - b.incorrect_count * 2),
-  );
-  const window = Math.max(5, Math.floor(scored.length / 4));
-  const top = scored.slice(0, window);
-  return top[Math.floor(Math.random() * top.length)];
+  if (verbs.length === 0) {
+    throw new Error("pickNextVerb called with empty list");
+  }
+  const recent = new Set(getRecentInfinitives());
+  if (lastInfinitive) recent.add(lastInfinitive);
+
+  // Build candidate pool: exclude recently-shown verbs if possible.
+  let candidates = verbs.filter((v) => !recent.has(v.infinitive));
+  if (candidates.length === 0) {
+    // All verbs are recent — relax and only exclude the very last one.
+    candidates = verbs.filter((v) => v.infinitive !== lastInfinitive);
+    if (candidates.length === 0) candidates = verbs;
+  }
+
+  // Tier 1: any never-practiced verbs are highest priority.
+  const untouched = candidates.filter((v) => v.practice_count === 0);
+  if (untouched.length > 0) {
+    return untouched[Math.floor(Math.random() * untouched.length)];
+  }
+
+  // Tier 2: weighted random across remaining candidates.
+  // Lower practice_count and higher incorrect_count → higher weight.
+  const weighted = candidates.map((v) => ({
+    verb: v,
+    weight: 1 / (v.practice_count + 1) + v.incorrect_count * 0.75,
+  }));
+  const total = weighted.reduce((s, w) => s + w.weight, 0);
+  let r = Math.random() * total;
+  for (const w of weighted) {
+    r -= w.weight;
+    if (r <= 0) return w.verb;
+  }
+  return weighted[weighted.length - 1].verb;
 }
 
 const ALL_FORMS = [
