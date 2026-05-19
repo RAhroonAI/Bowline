@@ -40,17 +40,16 @@ export default function VarverbPage() {
   const totalPractices = verbs.reduce((s, v) => s + v.practice_count, 0);
   const untouched = verbs.filter((v) => v.practice_count === 0).length;
 
-  async function startRound() {
+  async function startRoundFor(verb: Verb) {
     setError(null);
     setLoading(true);
+    setStage("exercise");
+    setActiveVerb(verb);
+    setSeed(null);
+    setGrade(null);
+    setUserInput("");
+    setLastVerb(verb.infinitive);
     try {
-      const verb =
-        picked === "(smart)"
-          ? pickNextVerb(verbs!, getLastVerb())
-          : verbs!.find((v) => v.infinitive === picked)!;
-      setActiveVerb(verb);
-      setLastVerb(verb.infinitive);
-
       const target_form = pickTargetForm(verb);
       const topic = pickTopic();
       const avoid = getRecentSentences();
@@ -66,14 +65,35 @@ export default function VarverbPage() {
       const round = (await res.json()) as RoundSeed;
       rememberSentence(round.english_sentence);
       setSeed(round);
-      setUserInput("");
-      setGrade(null);
-      setStage("exercise");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to start round");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function startRound() {
+    const verb =
+      picked === "(smart)"
+        ? pickNextVerb(verbs!, getLastVerb())
+        : verbs!.find((v) => v.infinitive === picked)!;
+    await startRoundFor(verb);
+  }
+
+  async function nextRound() {
+    // Always smart-pick for the in-session Next button so the user
+    // keeps moving through new verbs without going back to the menu.
+    const verb = pickNextVerb(verbs!, getLastVerb());
+    await startRoundFor(verb);
+  }
+
+  function endSession() {
+    setStage("ready");
+    setActiveVerb(null);
+    setSeed(null);
+    setGrade(null);
+    setUserInput("");
+    setError(null);
   }
 
   async function submitAnswer(e: React.FormEvent) {
@@ -105,15 +125,6 @@ export default function VarverbPage() {
     } finally {
       setLoading(false);
     }
-  }
-
-  function nextRound() {
-    setStage("ready");
-    setActiveVerb(null);
-    setSeed(null);
-    setGrade(null);
-    setUserInput("");
-    setError(null);
   }
 
   async function speakSwedish(text: string) {
@@ -190,7 +201,9 @@ export default function VarverbPage() {
           verb={activeVerb}
           targetForm={seed.target_form}
           userInput={userInput}
+          loading={loading}
           onNext={nextRound}
+          onEnd={endSession}
           onSpeak={() => speakSwedish(grade.corrected_swedish)}
         />
       )}
@@ -343,7 +356,9 @@ function ResultCard({
   verb,
   targetForm,
   userInput,
+  loading,
   onNext,
+  onEnd,
   onSpeak,
 }: {
   english: string;
@@ -351,7 +366,9 @@ function ResultCard({
   verb: Verb;
   targetForm: string;
   userInput: string;
+  loading: boolean;
   onNext: () => void;
+  onEnd: () => void;
   onSpeak: () => void;
 }) {
   const correct = grade.is_correct;
@@ -387,9 +404,26 @@ function ResultCard({
         <button
           type="button"
           onClick={onNext}
-          className="flex-1 rounded-full bg-sea px-5 py-3 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover"
+          disabled={loading}
+          className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-sea px-5 py-3 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover disabled:opacity-60"
         >
-          Next verb →
+          {loading ? (
+            <>
+              <Spinner /> Loading…
+            </>
+          ) : (
+            "Next verb →"
+          )}
+        </button>
+      </div>
+
+      <div className="mt-3 text-center">
+        <button
+          type="button"
+          onClick={onEnd}
+          className="text-[11px] font-medium uppercase tracking-[0.18em] text-ink/45 transition hover:text-ink/70"
+        >
+          End practice
         </button>
       </div>
 
