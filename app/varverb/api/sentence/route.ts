@@ -114,10 +114,8 @@ export async function POST(req: Request) {
     const response = await callAnthropicWithRetry(() => client.messages.create({
       model: MODEL,
       max_tokens: 600,
-      // Low temperature: prioritize sticking to the simplicity rules over
-      // creative variety. Topic seeds + Opus's strong instruction following
-      // carry the variety load.
-      temperature: 0.5,
+      // Opus 4.7 uses adaptive sampling and doesn't accept a temperature
+      // parameter. Variety comes from the per-call topic seed.
       tools: [
         {
           name: "create_practice_sentence",
