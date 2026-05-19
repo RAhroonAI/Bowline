@@ -24,8 +24,10 @@ export async function callAnthropicWithRetry<T>(
         message.includes("529") ||
         message.includes("503");
       if (!isRetriable || attempt === maxRetries) throw err;
-      // Backoff: 600ms, 1800ms (Anthropic overloads usually clear in seconds)
-      const delayMs = 600 * Math.pow(3, attempt);
+      // Faster backoff: 250ms, 750ms. If Anthropic is overloaded enough that
+      // 1 second of backoff doesn't help, it's better to fail fast so the
+      // user can decide whether to retry rather than waiting on a spinner.
+      const delayMs = 250 * Math.pow(3, attempt);
       await new Promise((r) => setTimeout(r, delayMs));
     }
   }
