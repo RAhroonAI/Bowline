@@ -10,6 +10,9 @@ import {
   setLastGlosa,
   getLastGlosa,
   rememberGlosa,
+  listChapters,
+  filterByChapter,
+  ALL_CHAPTERS,
 } from "@/lib/glosor/storage";
 import type { Glosa, WordGradeResult } from "@/lib/glosor/types";
 
@@ -27,6 +30,7 @@ export default function GlosorPage() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [selectedChapter, setSelectedChapter] = useState<string>(ALL_CHAPTERS);
 
   useEffect(() => {
     setGlosor(loadGlosor());
@@ -36,8 +40,10 @@ export default function GlosorPage() {
     return <main className="min-h-screen" aria-hidden />;
   }
 
-  const totalPractices = glosor.reduce((s, g) => s + g.practice_count, 0);
-  const untouched = glosor.filter((g) => g.practice_count === 0).length;
+  const chapters = listChapters(glosor);
+  const filtered = filterByChapter(glosor, selectedChapter);
+  const totalPractices = filtered.reduce((s, g) => s + g.practice_count, 0);
+  const untouched = filtered.filter((g) => g.practice_count === 0).length;
 
   async function startRoundFor(g: Glosa) {
     setError(null);
@@ -55,12 +61,22 @@ export default function GlosorPage() {
   }
 
   async function startRound() {
-    const g = pickNextGlosa(glosor!, getLastGlosa());
+    const pool = filterByChapter(glosor!, selectedChapter);
+    if (pool.length === 0) {
+      setError("No words in this chapter yet.");
+      return;
+    }
+    const g = pickNextGlosa(pool, getLastGlosa());
     await startRoundFor(g);
   }
 
   async function nextRound() {
-    const g = pickNextGlosa(glosor!, getLastGlosa());
+    const pool = filterByChapter(glosor!, selectedChapter);
+    if (pool.length === 0) {
+      setError("No words in this chapter yet.");
+      return;
+    }
+    const g = pickNextGlosa(pool, getLastGlosa());
     await startRoundFor(g);
   }
 
@@ -189,10 +205,13 @@ export default function GlosorPage() {
 
       {stage === "ready" && (
         <ReadyPanel
-          total={glosor.length}
+          total={filtered.length}
           untouched={untouched}
           onStart={startRound}
           loading={loading}
+          chapters={chapters}
+          selectedChapter={selectedChapter}
+          onChapterChange={setSelectedChapter}
         />
       )}
 
@@ -232,11 +251,17 @@ function ReadyPanel({
   untouched,
   onStart,
   loading,
+  chapters,
+  selectedChapter,
+  onChapterChange,
 }: {
   total: number;
   untouched: number;
   onStart: () => void;
   loading: boolean;
+  chapters: string[];
+  selectedChapter: string;
+  onChapterChange: (v: string) => void;
 }) {
   return (
     <>
@@ -245,17 +270,49 @@ function ReadyPanel({
           Ready to begin
         </p>
         <p className="mt-6 font-serif text-2xl text-ink leading-snug">
-          {total} words in the list.
+          {total} {selectedChapter === ALL_CHAPTERS ? "words" : "words in this chapter"}.
           <br />
           <span className="text-ink/60">{untouched} not yet practiced.</span>
         </p>
       </section>
 
       <div className="mx-auto mt-6 w-full max-w-xs">
+        {chapters.length > 0 && (
+          <div className="mb-3">
+            <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.22em] text-ink/50">
+              Chapter
+            </label>
+            <div className="relative">
+              <select
+                value={selectedChapter}
+                onChange={(e) => onChapterChange(e.target.value)}
+                className="w-full appearance-none rounded-xl border border-ink/15 bg-white px-4 py-3 pr-10 font-sans text-sm text-ink shadow-card focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/20"
+              >
+                <option value={ALL_CHAPTERS}>All words</option>
+                {chapters.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              <svg
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 011.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+        )}
         <button
           type="button"
           onClick={onStart}
-          disabled={loading}
+          disabled={loading || total === 0}
           className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-sea px-6 py-3.5 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover disabled:opacity-60"
         >
           <Sparkles className="h-4 w-4" /> Start practice

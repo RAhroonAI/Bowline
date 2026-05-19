@@ -12,12 +12,30 @@ function ensureFields(g: Partial<Glosa>): Glosa {
   return {
     english: g.english ?? "",
     swedish: g.swedish ?? "",
+    chapter: g.chapter,
     example: g.example,
     notes: g.notes,
     practice_count: g.practice_count ?? 0,
     correct_count: g.correct_count ?? 0,
     incorrect_count: g.incorrect_count ?? 0,
   };
+}
+
+export const ALL_CHAPTERS = "(all)";
+export const NO_CHAPTER = "(uncategorized)";
+
+export function listChapters(glosor: Glosa[]): string[] {
+  const set = new Set<string>();
+  for (const g of glosor) {
+    if (g.chapter && g.chapter.trim() !== "") set.add(g.chapter.trim());
+  }
+  return Array.from(set).sort();
+}
+
+export function filterByChapter(glosor: Glosa[], chapter: string): Glosa[] {
+  if (chapter === ALL_CHAPTERS) return glosor;
+  if (chapter === NO_CHAPTER) return glosor.filter((g) => !g.chapter || g.chapter.trim() === "");
+  return glosor.filter((g) => g.chapter === chapter);
 }
 
 export function loadGlosor(): Glosa[] {

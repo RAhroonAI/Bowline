@@ -4,6 +4,7 @@ export type Verb = {
   preteritum: string;
   supinum: string;
   perfekt_particip: string;
+  chapter?: string;
   practice_count: number;
   correct_count: number;
   incorrect_count: number;

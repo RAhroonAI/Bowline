@@ -1,6 +1,7 @@
 export type Glosa = {
   english: string;
   swedish: string;
+  chapter?: string;
   example?: string;
   notes?: string;
   practice_count: number;
