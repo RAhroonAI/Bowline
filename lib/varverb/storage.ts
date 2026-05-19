@@ -13,10 +13,26 @@ function ensureFields(v: Partial<Verb>): Verb {
     preteritum: v.preteritum ?? "",
     supinum: v.supinum ?? "",
     perfekt_particip: v.perfekt_particip ?? "",
+    chapter: v.chapter,
     practice_count: v.practice_count ?? 0,
     correct_count: v.correct_count ?? 0,
     incorrect_count: v.incorrect_count ?? 0,
   };
+}
+
+export const ALL_VERB_CHAPTERS = "(all)";
+
+export function listVerbChapters(verbs: Verb[]): string[] {
+  const set = new Set<string>();
+  for (const v of verbs) {
+    if (v.chapter && v.chapter.trim() !== "") set.add(v.chapter.trim());
+  }
+  return Array.from(set).sort();
+}
+
+export function filterVerbsByChapter(verbs: Verb[], chapter: string): Verb[] {
+  if (chapter === ALL_VERB_CHAPTERS) return verbs;
+  return verbs.filter((v) => v.chapter === chapter);
 }
 
 export function loadVerbs(): Verb[] {

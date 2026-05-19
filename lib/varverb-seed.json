@@ -7,7 +7,8 @@
     "perfekt_particip": "-sedd",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sitta",
@@ -17,7 +18,8 @@
     "perfekt_particip": "",
     "practice_count": 1,
     "correct_count": 0,
-    "incorrect_count": 1
+    "incorrect_count": 1,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sjunga",
@@ -27,7 +29,8 @@
     "perfekt_particip": "sjungen",
     "practice_count": 2,
     "correct_count": 0,
-    "incorrect_count": 2
+    "incorrect_count": 2,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sjunka",
@@ -37,7 +40,8 @@
     "perfekt_particip": "sjunken",
     "practice_count": 2,
     "correct_count": 0,
-    "incorrect_count": 2
+    "incorrect_count": 2,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skola",
@@ -47,7 +51,8 @@
     "perfekt_particip": "",
     "practice_count": 1,
     "correct_count": 0,
-    "incorrect_count": 1
+    "incorrect_count": 1,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skilja",
@@ -57,7 +62,8 @@
     "perfekt_particip": "skild",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skina",
@@ -67,7 +73,8 @@
     "perfekt_particip": "",
     "practice_count": 3,
     "correct_count": 0,
-    "incorrect_count": 3
+    "incorrect_count": 3,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skjuta",
@@ -77,7 +84,8 @@
     "perfekt_particip": "-skjuten",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skrika",
@@ -87,7 +95,8 @@
     "perfekt_particip": "-skriken",
     "practice_count": 3,
     "correct_count": 0,
-    "incorrect_count": 3
+    "incorrect_count": 3,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skriva",
@@ -97,7 +106,8 @@
     "perfekt_particip": "-skriven",
     "practice_count": 1,
     "correct_count": 0,
-    "incorrect_count": 1
+    "incorrect_count": 1,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skryta",
@@ -107,7 +117,8 @@
     "perfekt_particip": "-skruten",
     "practice_count": 1,
     "correct_count": 0,
-    "incorrect_count": 1
+    "incorrect_count": 1,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "skära",
@@ -117,7 +128,8 @@
     "perfekt_particip": "-skuren",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "slippa",
@@ -127,7 +139,8 @@
     "perfekt_particip": "-sluppen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "slita",
@@ -137,7 +150,8 @@
     "perfekt_particip": "-sliten",
     "practice_count": 1,
     "correct_count": 0,
-    "incorrect_count": 1
+    "incorrect_count": 1,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "slå",
@@ -147,7 +161,8 @@
     "perfekt_particip": "-slagen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "slåss",
@@ -157,7 +172,8 @@
     "perfekt_particip": "",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "smyga",
@@ -167,7 +183,8 @@
     "perfekt_particip": "-smugen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "smörja",
@@ -177,7 +194,8 @@
     "perfekt_particip": "smord",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "snyta",
@@ -187,7 +205,8 @@
     "perfekt_particip": "snuten",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sova",
@@ -197,7 +216,8 @@
     "perfekt_particip": "",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "spinna",
@@ -207,7 +227,8 @@
     "perfekt_particip": "spunnen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "spricka",
@@ -217,7 +238,8 @@
     "perfekt_particip": "sprucken",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sprida",
@@ -227,7 +249,8 @@
     "perfekt_particip": "spridd",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "springa",
@@ -237,7 +260,8 @@
     "perfekt_particip": "sprungen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sticka",
@@ -247,7 +271,8 @@
     "perfekt_particip": "stucken",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "stiga",
@@ -257,7 +282,8 @@
     "perfekt_particip": "-stigen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "stjäla",
@@ -267,7 +293,8 @@
     "perfekt_particip": "-stulen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "strida",
@@ -277,7 +304,8 @@
     "perfekt_particip": "-stridd",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "stryka",
@@ -287,7 +315,8 @@
     "perfekt_particip": "-struken",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "stå",
@@ -297,7 +326,8 @@
     "perfekt_particip": "-städ",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "suga",
@@ -307,7 +337,8 @@
     "perfekt_particip": "-sugen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "supa",
@@ -317,7 +348,8 @@
     "perfekt_particip": "-supen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "svida",
@@ -327,7 +359,8 @@
     "perfekt_particip": "",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "svika",
@@ -337,7 +370,8 @@
     "perfekt_particip": "-sviken",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "välja",
@@ -347,7 +381,8 @@
     "perfekt_particip": "-svald",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "svälja",
@@ -357,7 +392,8 @@
     "perfekt_particip": "-svald",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sväva",
@@ -367,7 +403,8 @@
     "perfekt_particip": "svuren",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "svära",
@@ -377,7 +414,8 @@
     "perfekt_particip": "svuren",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "säga",
@@ -387,7 +425,8 @@
     "perfekt_particip": "sagd",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sälja",
@@ -397,7 +436,8 @@
     "perfekt_particip": "såld",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "sätta",
@@ -407,7 +447,8 @@
     "perfekt_particip": "satt",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "ta",
@@ -417,7 +458,8 @@
     "perfekt_particip": "-tagen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "tiga",
@@ -427,7 +469,8 @@
     "perfekt_particip": "-tegen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "tvinga",
@@ -437,7 +480,8 @@
     "perfekt_particip": "tvingad",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "toras",
@@ -447,7 +491,8 @@
     "perfekt_particip": "",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "vara",
@@ -457,7 +502,8 @@
     "perfekt_particip": "",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "veta",
@@ -467,7 +513,8 @@
     "perfekt_particip": "",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "vika",
@@ -477,7 +524,8 @@
     "perfekt_particip": "viken/vikt",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "vilja",
@@ -487,7 +535,8 @@
     "perfekt_particip": "",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "vinna",
@@ -497,7 +546,8 @@
     "perfekt_particip": "vunnen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "vrida",
@@ -507,7 +557,8 @@
     "perfekt_particip": "vriden",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "välja",
@@ -517,7 +568,8 @@
     "perfekt_particip": "vald",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "vänja",
@@ -527,7 +579,8 @@
     "perfekt_particip": "vand",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "växa",
@@ -537,7 +590,8 @@
     "perfekt_particip": "vuxen",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   },
   {
     "infinitive": "äta",
@@ -547,6 +601,7 @@
     "perfekt_particip": "-äten",
     "practice_count": 0,
     "correct_count": 0,
-    "incorrect_count": 0
+    "incorrect_count": 0,
+    "chapter": "B verbs"
   }
 ]

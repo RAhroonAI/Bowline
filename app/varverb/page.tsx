@@ -14,6 +14,9 @@ import {
   getRecentSentences,
   rememberSentence,
   rememberInfinitive,
+  listVerbChapters,
+  filterVerbsByChapter,
+  ALL_VERB_CHAPTERS,
 } from "@/lib/varverb/storage";
 import type { Verb, RoundSeed, GradeResult, TargetForm } from "@/lib/varverb/types";
 
@@ -55,6 +58,7 @@ export default function VarverbPage() {
   const [userInput, setUserInput] = useState("");
   const [grade, setGrade] = useState<GradeResult | null>(null);
   const [picked, setPicked] = useState<string>("(smart)");
+  const [selectedChapter, setSelectedChapter] = useState<string>(ALL_VERB_CHAPTERS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
@@ -82,8 +86,10 @@ export default function VarverbPage() {
     return <main className="min-h-screen" aria-hidden />;
   }
 
-  const totalPractices = verbs.reduce((s, v) => s + v.practice_count, 0);
-  const untouched = verbs.filter((v) => v.practice_count === 0).length;
+  const chapters = listVerbChapters(verbs);
+  const filteredVerbs = filterVerbsByChapter(verbs, selectedChapter);
+  const totalPractices = filteredVerbs.reduce((s, v) => s + v.practice_count, 0);
+  const untouched = filteredVerbs.filter((v) => v.practice_count === 0).length;
 
   async function startRoundFor(verb: Verb) {
     setError(null);
@@ -128,17 +134,27 @@ export default function VarverbPage() {
   }
 
   async function startRound() {
+    const pool = filterVerbsByChapter(verbs!, selectedChapter);
+    if (pool.length === 0) {
+      setError("No verbs in this chapter yet.");
+      return;
+    }
     const verb =
       picked === "(smart)"
-        ? pickNextVerb(verbs!, getLastVerb())
-        : verbs!.find((v) => v.infinitive === picked)!;
+        ? pickNextVerb(pool, getLastVerb())
+        : pool.find((v) => v.infinitive === picked) ?? pool[0];
     await startRoundFor(verb);
   }
 
   async function nextRound() {
-    // Always smart-pick for the in-session Next button so the user
-    // keeps moving through new verbs without going back to the menu.
-    const verb = pickNextVerb(verbs!, getLastVerb());
+    // Smart-pick within the currently selected chapter so Next verb
+    // keeps practice scoped to the chapter you started in.
+    const pool = filterVerbsByChapter(verbs!, selectedChapter);
+    if (pool.length === 0) {
+      setError("No verbs in this chapter yet.");
+      return;
+    }
+    const verb = pickNextVerb(pool, getLastVerb());
     await startRoundFor(verb);
   }
 
@@ -335,16 +351,19 @@ export default function VarverbPage() {
 
       {stage === "ready" && (
         <ReadyCard
-          total={verbs.length}
+          total={filteredVerbs.length}
           untouched={untouched}
           picked={picked}
           options={[
             "(smart)",
-            ...verbs.map((v) => v.infinitive).sort(),
+            ...filteredVerbs.map((v) => v.infinitive).sort(),
           ]}
           onPick={setPicked}
           onStart={startRound}
           loading={loading}
+          chapters={chapters}
+          selectedChapter={selectedChapter}
+          onChapterChange={setSelectedChapter}
         />
       )}
 
@@ -402,6 +421,9 @@ function ReadyCard({
   onPick,
   onStart,
   loading,
+  chapters,
+  selectedChapter,
+  onChapterChange,
 }: {
   total: number;
   untouched: number;
@@ -410,6 +432,9 @@ function ReadyCard({
   onPick: (v: string) => void;
   onStart: () => void;
   loading: boolean;
+  chapters: string[];
+  selectedChapter: string;
+  onChapterChange: (v: string) => void;
 }) {
   return (
     <>
@@ -418,13 +443,46 @@ function ReadyCard({
           Ready to begin
         </p>
         <p className="mt-6 font-serif text-2xl text-ink leading-snug">
-          {total} verbs in the list.
+          {total} {selectedChapter === ALL_VERB_CHAPTERS ? "verbs" : "verbs in this set"}.
           <br />
           <span className="text-ink/60">{untouched} not yet practiced.</span>
         </p>
       </section>
 
       <div className="mx-auto mt-6 w-full max-w-xs">
+        {chapters.length > 0 && (
+          <div className="mb-3">
+            <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.22em] text-ink/50">
+              Set
+            </label>
+            <div className="relative">
+              <select
+                value={selectedChapter}
+                onChange={(e) => onChapterChange(e.target.value)}
+                className="w-full appearance-none rounded-xl border border-ink/15 bg-white px-4 py-3 pr-10 font-sans text-sm text-ink shadow-card focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/20"
+              >
+                <option value={ALL_VERB_CHAPTERS}>All verbs</option>
+                {chapters.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              <svg
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 011.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+        )}
+
         <label className="sr-only" htmlFor="verb-picker">
           Verb to drill
         </label>
@@ -459,7 +517,7 @@ function ReadyCard({
         <button
           type="button"
           onClick={onStart}
-          disabled={loading}
+          disabled={loading || total === 0}
           className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-sea px-6 py-3.5 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover disabled:opacity-60"
         >
           {loading ? (
