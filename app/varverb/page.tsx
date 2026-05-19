@@ -17,6 +17,7 @@ import {
 import type { Verb, RoundSeed, GradeResult } from "@/lib/varverb/types";
 
 type Stage = "ready" | "exercise" | "graded";
+type ChatMessage = { role: "user" | "assistant"; content: string };
 
 export default function VarverbPage() {
   const [verbs, setVerbs] = useState<Verb[] | null>(null);
@@ -28,6 +29,9 @@ export default function VarverbPage() {
   const [picked, setPicked] = useState<string>("(smart)");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
     setVerbs(loadVerbs());
@@ -48,6 +52,8 @@ export default function VarverbPage() {
     setSeed(null);
     setGrade(null);
     setUserInput("");
+    setChatHistory([]);
+    setChatInput("");
     setLastVerb(verb.infinitive);
     try {
       const target_form = pickTargetForm(verb);
@@ -93,7 +99,54 @@ export default function VarverbPage() {
     setSeed(null);
     setGrade(null);
     setUserInput("");
+    setChatHistory([]);
+    setChatInput("");
     setError(null);
+  }
+
+  async function sendChat(e: React.FormEvent) {
+    e.preventDefault();
+    const question = chatInput.trim();
+    if (!question || !activeVerb || !seed || !grade) return;
+    setChatLoading(true);
+    setChatInput("");
+    const newHistory: ChatMessage[] = [
+      ...chatHistory,
+      { role: "user", content: question },
+    ];
+    setChatHistory(newHistory);
+    try {
+      const res = await fetch("/varverb/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          verb: activeVerb,
+          seed,
+          user_input: userInput,
+          grade,
+          history: chatHistory,
+          question,
+        }),
+      });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error || `HTTP ${res.status}`);
+      }
+      const { answer } = (await res.json()) as { answer: string };
+      setChatHistory([...newHistory, { role: "assistant", content: answer }]);
+    } catch (e) {
+      setChatHistory([
+        ...newHistory,
+        {
+          role: "assistant",
+          content: `_Couldn't get a response: ${
+            e instanceof Error ? e.message : "unknown error"
+          }_`,
+        },
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
   }
 
   async function submitAnswer(e: React.FormEvent) {
@@ -202,6 +255,11 @@ export default function VarverbPage() {
           targetForm={seed.target_form}
           userInput={userInput}
           loading={loading}
+          chatHistory={chatHistory}
+          chatInput={chatInput}
+          chatLoading={chatLoading}
+          onChatInput={setChatInput}
+          onChatSubmit={sendChat}
           onNext={nextRound}
           onEnd={endSession}
           onSpeak={() => speakSwedish(grade.corrected_swedish)}
@@ -357,6 +415,11 @@ function ResultCard({
   targetForm,
   userInput,
   loading,
+  chatHistory,
+  chatInput,
+  chatLoading,
+  onChatInput,
+  onChatSubmit,
   onNext,
   onEnd,
   onSpeak,
@@ -367,6 +430,11 @@ function ResultCard({
   targetForm: string;
   userInput: string;
   loading: boolean;
+  chatHistory: ChatMessage[];
+  chatInput: string;
+  chatLoading: boolean;
+  onChatInput: (v: string) => void;
+  onChatSubmit: (e: React.FormEvent) => void;
   onNext: () => void;
   onEnd: () => void;
   onSpeak: () => void;
@@ -473,6 +541,63 @@ function ResultCard({
         <div className="mt-2 text-sm leading-relaxed text-ink/80">
           <MarkdownText text={grade.explanation} />
         </div>
+      </section>
+
+      <section className="mt-8 border-t border-ink/10 pt-6">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-sea-600">
+          Follow-up
+        </p>
+        <p className="mt-1 text-sm text-ink/55">
+          Ask about the verb, the sentence, grammar, anything.
+        </p>
+
+        {chatHistory.length > 0 && (
+          <div className="mt-4 space-y-3">
+            {chatHistory.map((msg, i) => (
+              <div
+                key={i}
+                className={
+                  msg.role === "user"
+                    ? "rounded-2xl rounded-tr-md bg-sea/10 px-4 py-3 text-sm text-ink"
+                    : "rounded-2xl rounded-tl-md bg-sand-200 px-4 py-3 text-sm leading-relaxed text-ink/85"
+                }
+              >
+                {msg.role === "assistant" ? (
+                  <MarkdownText text={msg.content} />
+                ) : (
+                  msg.content
+                )}
+              </div>
+            ))}
+            {chatLoading && (
+              <div className="rounded-2xl rounded-tl-md bg-sand-200 px-4 py-3 text-sm text-ink/55">
+                <span className="inline-flex items-center gap-2">
+                  <Spinner /> Thinking…
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        <form onSubmit={onChatSubmit} className="mt-4 flex gap-2">
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => onChatInput(e.target.value)}
+            placeholder="Ask anything…"
+            disabled={chatLoading}
+            autoComplete="off"
+            autoCorrect="off"
+            className="min-w-0 flex-1 rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm text-ink shadow-card placeholder:text-ink/35 focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/20 disabled:opacity-60"
+          />
+          <button
+            type="submit"
+            disabled={chatLoading || !chatInput.trim()}
+            className="flex-none rounded-full border border-ink/15 bg-white px-5 py-2.5 text-sm font-semibold text-ink shadow-card transition hover:border-ink/30 hover:shadow-cardHover disabled:opacity-60"
+          >
+            Send
+          </button>
+        </form>
       </section>
     </>
   );
