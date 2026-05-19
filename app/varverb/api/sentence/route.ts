@@ -110,12 +110,10 @@ export async function POST(req: Request) {
     `If they don't match exactly in meaning, rewrite.` +
     avoidDirective;
 
-  try {
+  async function callOnce(extraGuidance: string = ""): Promise<RoundSeed | null> {
     const response = await callAnthropicWithRetry(() => client.messages.create({
       model: MODEL,
       max_tokens: 600,
-      // Opus 4.7 uses adaptive sampling and doesn't accept a temperature
-      // parameter. Variety comes from the per-call topic seed.
       tools: [
         {
           name: "create_practice_sentence",
@@ -142,19 +140,67 @@ export async function POST(req: Request) {
         },
       ],
       tool_choice: { type: "tool", name: "create_practice_sentence" },
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: prompt + extraGuidance }],
     }));
 
     for (const block of response.content) {
       if (block.type === "tool_use") {
-        return NextResponse.json(block.input as RoundSeed);
+        return block.input as RoundSeed;
       }
     }
-    return NextResponse.json(
-      { error: "Model did not return a tool call" },
-      { status: 500 },
-    );
+    return null;
+  }
+
+  try {
+    let seed = await callOnce();
+    if (seed && !swedishContainsVerb(seed.expected_swedish, verb)) {
+      // The AI generated a Swedish sentence that doesn't actually use the
+      // target verb. Retry once with explicit guidance.
+      const fix =
+        `\n\nCRITICAL FIX — your previous attempt did NOT use the verb ` +
+        `'${verb.infinitive}' in the Swedish translation. The Swedish MUST ` +
+        `contain a form of '${verb.infinitive}' (infinitive ${verb.infinitive}, ` +
+        `presens ${verb.presens}, preteritum ${verb.preteritum}, supinum ` +
+        `${verb.supinum}, perfekt particip ${verb.perfekt_particip}). Rewrite ` +
+        `both the English sentence and Swedish translation so the Swedish ` +
+        `actually uses one of those forms of '${verb.infinitive}'.`;
+      seed = await callOnce(fix);
+    }
+    if (!seed) {
+      return NextResponse.json(
+        { error: "Model did not return a tool call" },
+        { status: 500 },
+      );
+    }
+    return NextResponse.json(seed);
   } catch (err) {
     return NextResponse.json({ error: friendlyAnthropicError(err) }, { status: 500 });
   }
+}
+
+function swedishContainsVerb(swedish: string, verb: Verb): boolean {
+  const forms = [
+    verb.infinitive,
+    verb.presens,
+    verb.preteritum,
+    verb.supinum,
+    verb.perfekt_particip,
+  ]
+    .filter((s) => s && s.trim() !== "" && s.trim() !== "-")
+    .flatMap((s) => s.split("/"))
+    .map((s) => s.trim().replace(/^-+/, "").toLowerCase())
+    .filter((s) => s.length >= 2);
+
+  const lowerSwedish = swedish.toLowerCase();
+  return forms.some((form) => {
+    // Check for the form as a substring (allows inflected variants).
+    if (lowerSwedish.includes(form)) return true;
+    // Also check the truncated stem for irregular-form coverage
+    // (e.g., "slagen" → "slage" → matches "slaget", "slagna", "sönderslaget").
+    if (form.length >= 4) {
+      const stem = form.slice(0, form.length - 1);
+      if (lowerSwedish.includes(stem)) return true;
+    }
+    return false;
+  });
 }
