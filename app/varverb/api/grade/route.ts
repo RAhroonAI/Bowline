@@ -3,7 +3,7 @@ import { callAnthropicWithRetry, friendlyAnthropicError } from "@/lib/anthropic-
 import { NextResponse } from "next/server";
 import type { Verb, RoundSeed, GradeResult } from "@/lib/varverb/types";
 
-const MODEL = "claude-haiku-4-5";
+const MODEL = "claude-sonnet-4-6";
 
 export const runtime = "nodejs";
 

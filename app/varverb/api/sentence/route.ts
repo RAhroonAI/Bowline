@@ -80,7 +80,14 @@ export async function POST(req: Request) {
     `- "He pondered the meaning of suffering."\n` +
     `- "Patience is a virtue rarely found."\n` +
     `- "Despite the obstacles, she persevered."\n` +
-    `- "Had they known, things would be different."` +
+    `- "Had they known, things would be different."\n\n` +
+    `CRITICAL — Swedish accuracy:\n` +
+    `- Before you finalize, re-read your Swedish translation as if you were a Swedish ` +
+    `teacher proofreading a student. Check every word for spelling, gender (en/ett), ` +
+    `definite/indefinite forms, and silent letters (e.g. "gångvägen" not "gånvägen", ` +
+    `"någon" not "nån" in writing, "och" not "ock").\n` +
+    `- If you're uncertain a Swedish word is spelled correctly, choose a simpler word ` +
+    `you're sure of. Better a plain sentence than one with a typo.` +
     avoidDirective;
 
   try {
