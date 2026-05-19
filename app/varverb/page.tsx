@@ -32,6 +32,53 @@ function normalizeForm(s: string): string {
   return s.toLowerCase().trim().replace(/^-+/, "").replace(/\s+/g, " ");
 }
 
+// Normalize a sentence for comparison: lowercase, collapse whitespace,
+// strip surrounding punctuation (periods, commas, ?!).
+function normalizeSentence(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[.,!?;:]+$/g, "")
+    .trim();
+}
+
+// Expand sentences containing X/Y slash-alternates into all combinations.
+// "Han spred kartan/mappen på bordet" → ["Han spred kartan på bordet",
+//                                       "Han spred mappen på bordet"]
+function expandSentenceAlternates(text: string): string[] {
+  const tokens = text.split(/(\s+)/);
+  let combos: string[][] = [[]];
+  for (const tok of tokens) {
+    if (/\s+/.test(tok)) {
+      for (const c of combos) c.push(tok);
+      continue;
+    }
+    // Split off attached punctuation so "kartan/mappen." → alternates of
+    // ["kartan", "mappen"] plus trailing "."
+    const m = tok.match(/^([^.,!?;:]*)([.,!?;:]*)$/);
+    const core = m ? m[1] : tok;
+    const trail = m ? m[2] : "";
+    if (core.includes("/")) {
+      const alts = core.split("/").map((a) => a + trail);
+      const next: string[][] = [];
+      for (const c of combos) {
+        for (const a of alts) next.push([...c, a]);
+      }
+      combos = next;
+    } else {
+      for (const c of combos) c.push(tok);
+    }
+  }
+  return combos.map((c) => c.join(""));
+}
+
+function matchesSentence(userInput: string, correct: string): boolean {
+  const userNorm = normalizeSentence(userInput);
+  return expandSentenceAlternates(correct).some(
+    (alt) => normalizeSentence(alt) === userNorm,
+  );
+}
+
 function checkConjugationForm(userInput: string, correct: string): boolean {
   const correctTrim = correct.trim();
   if (!correctTrim || correctTrim === "-") return true;
@@ -298,8 +345,7 @@ export default function VarverbPage() {
   function confirmAnswer(e: React.FormEvent) {
     e.preventDefault();
     if (!grade) return;
-    const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
-    if (normalize(confirmInput) === normalize(grade.corrected_swedish)) {
+    if (matchesSentence(confirmInput, grade.corrected_swedish)) {
       setNeedsConfirm(false);
       setConfirmError(null);
     } else {

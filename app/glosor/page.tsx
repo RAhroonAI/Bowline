@@ -19,6 +19,50 @@ import type { Glosa, WordGradeResult } from "@/lib/glosor/types";
 type Stage = "ready" | "exercise" | "graded";
 type ChatMessage = { role: "user" | "assistant"; content: string };
 
+// Normalize an answer for comparison: lowercase, collapse whitespace,
+// strip trailing punctuation.
+function normalizeAnswer(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .replace(/[.,!?;:]+$/g, "")
+    .trim();
+}
+
+// Expand answers with X/Y slash-alternates into all combinations.
+// "kartan/mappen på bordet" → ["kartan på bordet", "mappen på bordet"]
+function expandAlternates(text: string): string[] {
+  const tokens = text.split(/(\s+)/);
+  let combos: string[][] = [[]];
+  for (const tok of tokens) {
+    if (/\s+/.test(tok)) {
+      for (const c of combos) c.push(tok);
+      continue;
+    }
+    const m = tok.match(/^([^.,!?;:]*)([.,!?;:]*)$/);
+    const core = m ? m[1] : tok;
+    const trail = m ? m[2] : "";
+    if (core.includes("/")) {
+      const alts = core.split("/").map((a) => a + trail);
+      const next: string[][] = [];
+      for (const c of combos) {
+        for (const a of alts) next.push([...c, a]);
+      }
+      combos = next;
+    } else {
+      for (const c of combos) c.push(tok);
+    }
+  }
+  return combos.map((c) => c.join(""));
+}
+
+function matchesAnswer(userInput: string, correct: string): boolean {
+  const userNorm = normalizeAnswer(userInput);
+  return expandAlternates(correct).some(
+    (alt) => normalizeAnswer(alt) === userNorm,
+  );
+}
+
 export default function GlosorPage() {
   const [glosor, setGlosor] = useState<Glosa[] | null>(null);
   const [stage, setStage] = useState<Stage>("ready");
@@ -107,10 +151,9 @@ export default function GlosorPage() {
     if (!attempt || !active) return;
     setError(null);
 
-    // Fast path: if the answer matches exactly (case- and whitespace-
-    // insensitive), mark correct instantly without calling the AI.
-    const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
-    if (normalize(attempt) === normalize(active.swedish)) {
+    // Fast path: if the answer matches exactly (with normalization +
+    // slash-alternate expansion), mark correct instantly without calling AI.
+    if (matchesAnswer(attempt, active.swedish)) {
       const fastGrade: WordGradeResult = {
         is_correct: true,
         corrected_swedish: active.swedish,
@@ -173,8 +216,7 @@ export default function GlosorPage() {
   function confirmAnswer(e: React.FormEvent) {
     e.preventDefault();
     if (!grade) return;
-    const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
-    if (normalize(confirmInput) === normalize(grade.corrected_swedish)) {
+    if (matchesAnswer(confirmInput, grade.corrected_swedish)) {
       setNeedsConfirm(false);
       setConfirmError(null);
     } else {
