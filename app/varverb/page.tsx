@@ -14,7 +14,34 @@ import {
   getRecentSentences,
   rememberSentence,
 } from "@/lib/varverb/storage";
-import type { Verb, RoundSeed, GradeResult } from "@/lib/varverb/types";
+import type { Verb, RoundSeed, GradeResult, TargetForm } from "@/lib/varverb/types";
+
+const CONJ_FORMS: { key: TargetForm; label: string }[] = [
+  { key: "infinitive", label: "Infinitive" },
+  { key: "presens", label: "Presens (present)" },
+  { key: "preteritum", label: "Preteritum (past)" },
+  { key: "supinum", label: "Supinum (with har/hade)" },
+  { key: "perfekt_particip", label: "Perfekt particip" },
+];
+
+function normalizeForm(s: string): string {
+  return s.toLowerCase().trim().replace(/^-+/, "").replace(/\s+/g, " ");
+}
+
+function checkConjugationForm(userInput: string, correct: string): boolean {
+  const correctTrim = correct.trim();
+  if (!correctTrim || correctTrim === "-") return true;
+  const userNorm = normalizeForm(userInput);
+  const alternates = correctTrim.split("/").map(normalizeForm);
+  return alternates.includes(userNorm);
+}
+
+function activeConjugationForms(verb: Verb) {
+  return CONJ_FORMS.filter((f) => {
+    const v = verb[f.key];
+    return typeof v === "string" && v.trim() !== "" && v.trim() !== "-";
+  });
+}
 
 type Stage = "ready" | "exercise" | "graded";
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -36,6 +63,15 @@ export default function VarverbPage() {
   const [needsConfirm, setNeedsConfirm] = useState(false);
   const [confirmInput, setConfirmInput] = useState("");
   const [confirmError, setConfirmError] = useState<string | null>(null);
+  const [conjugationInputs, setConjugationInputs] = useState<Record<TargetForm, string>>({
+    infinitive: "",
+    presens: "",
+    preteritum: "",
+    supinum: "",
+    perfekt_particip: "",
+  });
+  const [conjugationResults, setConjugationResults] = useState<Record<TargetForm, boolean> | null>(null);
+  const [needsConjugation, setNeedsConjugation] = useState(false);
 
   useEffect(() => {
     setVerbs(loadVerbs());
@@ -62,6 +98,9 @@ export default function VarverbPage() {
     setNeedsConfirm(false);
     setConfirmInput("");
     setConfirmError(null);
+    setNeedsConjugation(false);
+    setConjugationInputs({ infinitive: "", presens: "", preteritum: "", supinum: "", perfekt_particip: "" });
+    setConjugationResults(null);
     setLastVerb(verb.infinitive);
     try {
       const target_form = pickTargetForm(verb);
@@ -113,6 +152,9 @@ export default function VarverbPage() {
     setNeedsConfirm(false);
     setConfirmInput("");
     setConfirmError(null);
+    setNeedsConjugation(false);
+    setConjugationInputs({ infinitive: "", presens: "", preteritum: "", supinum: "", perfekt_particip: "" });
+    setConjugationResults(null);
     setError(null);
   }
 
@@ -187,6 +229,7 @@ export default function VarverbPage() {
         setUserInput(attempt);
         setWrongAttempt(null);
         setStage("graded");
+        setNeedsConjugation(true);
         const updated = recordPractice(activeVerb.infinitive, true);
         setVerbs(updated);
       } else {
@@ -213,6 +256,25 @@ export default function VarverbPage() {
     setNeedsConfirm(true);
     setConfirmInput("");
     setConfirmError(null);
+    setNeedsConjugation(true);
+  }
+
+  function submitConjugation(e: React.FormEvent) {
+    e.preventDefault();
+    if (!activeVerb) return;
+    const forms = activeConjugationForms(activeVerb);
+    const results: Record<TargetForm, boolean> = {
+      infinitive: true,
+      presens: true,
+      preteritum: true,
+      supinum: true,
+      perfekt_particip: true,
+    };
+    for (const form of forms) {
+      results[form.key] = checkConjugationForm(conjugationInputs[form.key], activeVerb[form.key]);
+    }
+    setConjugationResults(results);
+    setNeedsConjugation(false);
   }
 
   function confirmAnswer(e: React.FormEvent) {
@@ -312,6 +374,13 @@ export default function VarverbPage() {
           confirmError={confirmError}
           onConfirmInput={setConfirmInput}
           onConfirmSubmit={confirmAnswer}
+          needsConjugation={needsConjugation}
+          conjugationInputs={conjugationInputs}
+          conjugationResults={conjugationResults}
+          onConjugationInput={(form, value) =>
+            setConjugationInputs((prev) => ({ ...prev, [form]: value }))
+          }
+          onConjugationSubmit={submitConjugation}
           onChatInput={setChatInput}
           onChatSubmit={sendChat}
           onNext={nextRound}
@@ -500,6 +569,11 @@ function ResultCard({
   confirmError,
   onConfirmInput,
   onConfirmSubmit,
+  needsConjugation,
+  conjugationInputs,
+  conjugationResults,
+  onConjugationInput,
+  onConjugationSubmit,
   onChatInput,
   onChatSubmit,
   onNext,
@@ -520,6 +594,11 @@ function ResultCard({
   confirmError: string | null;
   onConfirmInput: (v: string) => void;
   onConfirmSubmit: (e: React.FormEvent) => void;
+  needsConjugation: boolean;
+  conjugationInputs: Record<TargetForm, string>;
+  conjugationResults: Record<TargetForm, boolean> | null;
+  onConjugationInput: (form: TargetForm, value: string) => void;
+  onConjugationSubmit: (e: React.FormEvent) => void;
   onChatInput: (v: string) => void;
   onChatSubmit: (e: React.FormEvent) => void;
   onNext: () => void;
@@ -556,7 +635,7 @@ function ResultCard({
         >
           🔊 Hear it
         </button>
-        {!needsConfirm && (
+        {!needsConfirm && !needsConjugation && (
           <button
             type="button"
             onClick={onNext}
@@ -624,37 +703,20 @@ function ResultCard({
           {verb.infinitive}
         </h2>
 
-        <div className="mt-4 overflow-hidden rounded-xl border border-ink/10 bg-white">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-sand-200">
-              <tr>
-                {["Infinitive", "Presens", "Preteritum", "Supinum", "Perfekt particip"].map(
-                  (h) => (
-                    <th
-                      key={h}
-                      className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-ink/60"
-                    >
-                      {h}
-                    </th>
-                  ),
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="px-3 py-2.5 font-semibold text-ink">{verb.infinitive}</td>
-                <td className="px-3 py-2.5 text-ink/80">{verb.presens}</td>
-                <td className="px-3 py-2.5 text-ink/80">{verb.preteritum}</td>
-                <td className="px-3 py-2.5 text-ink/80">{verb.supinum}</td>
-                <td className="px-3 py-2.5 text-ink/80">{verb.perfekt_particip}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <ConjugationDrill
+          verb={verb}
+          inputs={conjugationInputs}
+          results={conjugationResults}
+          needsConjugation={needsConjugation}
+          onInput={onConjugationInput}
+          onSubmit={onConjugationSubmit}
+        />
 
-        <div className="mt-4 text-sm leading-relaxed text-ink/80">
-          <MarkdownText text={grade.verb_explanation} />
-        </div>
+        {conjugationResults && (
+          <div className="mt-4 text-sm leading-relaxed text-ink/80">
+            <MarkdownText text={grade.verb_explanation} />
+          </div>
+        )}
 
         <h3 className="mt-6 font-serif text-lg italic text-ink/80">
           Your translation
@@ -721,6 +783,93 @@ function ResultCard({
         </form>
       </section>
     </>
+  );
+}
+
+function ConjugationDrill({
+  verb,
+  inputs,
+  results,
+  needsConjugation,
+  onInput,
+  onSubmit,
+}: {
+  verb: Verb;
+  inputs: Record<TargetForm, string>;
+  results: Record<TargetForm, boolean> | null;
+  needsConjugation: boolean;
+  onInput: (form: TargetForm, value: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}) {
+  const forms = activeConjugationForms(verb);
+  const allFilled = forms.every((f) => inputs[f.key].trim() !== "");
+  const submitted = results !== null;
+
+  return (
+    <div className="mt-5 rounded-2xl border border-sea/30 bg-sea/5 p-5">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-sea-600">
+        {submitted ? "Your conjugation" : "Now conjugate all forms"}
+      </p>
+      {!submitted && (
+        <p className="mt-1 text-xs text-ink/55">
+          Type each form below. Don&apos;t worry — guesses are fine, no penalty.
+        </p>
+      )}
+      <form onSubmit={onSubmit} className="mt-4 space-y-3">
+        {forms.map((f) => {
+          const isCorrect = results?.[f.key];
+          return (
+            <div key={f.key} className="flex flex-col">
+              <label
+                htmlFor={`conj-${f.key}`}
+                className="text-[10px] font-semibold uppercase tracking-wider text-ink/55"
+              >
+                {f.label}
+              </label>
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  id={`conj-${f.key}`}
+                  type="text"
+                  value={inputs[f.key]}
+                  onChange={(e) => onInput(f.key, e.target.value)}
+                  disabled={submitted}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                  placeholder={submitted ? "" : "—"}
+                  className={`min-w-0 flex-1 rounded-lg border bg-white px-3 py-2 font-serif text-base text-ink shadow-card placeholder:text-ink/25 focus:outline-none focus:ring-2 focus:ring-sea/20 ${
+                    submitted
+                      ? isCorrect
+                        ? "border-emerald-400/60"
+                        : "border-terra/60"
+                      : "border-ink/15 focus:border-sea"
+                  }`}
+                />
+                {submitted && (
+                  <span
+                    className={`flex-none whitespace-nowrap text-sm ${
+                      isCorrect ? "text-emerald-600" : "text-terra-600"
+                    }`}
+                  >
+                    {isCorrect ? "✓" : `✗ ${verb[f.key]}`}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+        {needsConjugation && !submitted && (
+          <button
+            type="submit"
+            disabled={!allFilled}
+            className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-full bg-sea px-5 py-2.5 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover disabled:opacity-60"
+          >
+            Check forms
+          </button>
+        )}
+      </form>
+    </div>
   );
 }
 
