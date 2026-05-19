@@ -44,31 +44,51 @@ export async function POST(req: Request) {
       : "";
 
   const prompt =
-    `Create an English sentence whose Swedish translation requires a ` +
-    `specific conjugation form of the verb '${verb.infinitive}'.\n\n` +
+    `Write ONE simple English sentence for a Swedish learner at A2–B1 level. ` +
+    `The Swedish translation must require a specific conjugation of the verb '${verb.infinitive}'.\n\n` +
     `Verb forms:\n` +
     `- infinitive: ${verb.infinitive}\n` +
-    `- presens (present): ${verb.presens}\n` +
-    `- preteritum (past): ${verb.preteritum}\n` +
-    `- supinum (used with har/hade for perfect tenses): ${verb.supinum}\n` +
-    `- perfekt_particip (used as adjective): ${verb.perfekt_particip}\n` +
+    `- presens: ${verb.presens}\n` +
+    `- preteritum: ${verb.preteritum}\n` +
+    `- supinum (with har/hade): ${verb.supinum}\n` +
+    `- perfekt_particip: ${verb.perfekt_particip}\n` +
     formDirective +
     topicDirective +
-    `\n\nSTRICT REQUIREMENTS:\n` +
-    `- Level: B1 (intermediate). Both the English AND the resulting Swedish must be at B1. No higher.\n` +
-    `- Vocabulary: only common everyday words. NO abstract nouns, NO idioms, NO literary phrasing.\n` +
-    `- Length: 5–10 words. Simple grammar.\n` +
-    `- Vary subject, time, and setting from typical example sentences. Be specific and concrete.\n\n` +
-    `GOOD style: 'I drank coffee this morning.' 'She has lived here for two years.' 'We took the bus yesterday.'\n` +
-    `BAD style (do NOT produce anything like these): 'The bitter medicine without complaining.' 'He pondered the meaning of suffering.'` +
+    `\n\nVERY STRICT RULES — DO NOT BREAK ANY OF THESE:\n` +
+    `- Length: 4–8 words. Short sentences only.\n` +
+    `- Use only common everyday English words. No big words, no formal vocabulary, ` +
+    `no idioms, no figurative language. If a word isn't in basic A2 textbook English, don't use it.\n` +
+    `- Grammar: simple present, simple past, or present perfect ONLY. ` +
+    `No conditionals, no "if/then", no passive voice, no subjunctive, no modal stacking ` +
+    `("might have been"), no participial phrases.\n` +
+    `- Subjects: prefer "I", "she", "he", "we", "they", "my friend", "the kids", or a ` +
+    `simple name. Avoid abstract subjects like "the system", "patience", "this idea".\n` +
+    `- Topics: concrete daily life — making coffee, taking the bus, calling a friend, ` +
+    `eating dinner, washing dishes, walking to school, missing the train, getting tired. ` +
+    `NEVER use abstract concepts (justice, freedom, meaning, society, success, etc.).\n` +
+    `- Be specific, not philosophical.\n\n` +
+    `EXAMPLES of the EXACT register I want — match this complexity, not higher:\n` +
+    `- "I drank coffee this morning."\n` +
+    `- "She is tired today."\n` +
+    `- "We took the bus yesterday."\n` +
+    `- "He has lived here for years."\n` +
+    `- "The kids ate all the bread."\n` +
+    `- "Anna called her mother."\n\n` +
+    `EXAMPLES of what is FORBIDDEN — do not produce sentences anywhere near this hard:\n` +
+    `- "The bitter medicine without complaining."\n` +
+    `- "He pondered the meaning of suffering."\n` +
+    `- "Patience is a virtue rarely found."\n` +
+    `- "Despite the obstacles, she persevered."\n` +
+    `- "Had they known, things would be different."` +
     avoidDirective;
 
   try {
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: 600,
-      // Higher temperature to encourage variety across calls
-      temperature: 1.0,
+      // Moderate temperature: enough variety, but not enough to drift into
+      // higher-register sentences. Topic seeds carry most of the variety load.
+      temperature: 0.7,
       tools: [
         {
           name: "create_practice_sentence",
