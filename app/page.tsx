@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { WatercolorBowline } from "@/components/WatercolorBowline";
 import { WatercolorVarverb } from "@/components/WatercolorVarverb";
+import { WatercolorGlosor } from "@/components/WatercolorGlosor";
 
 export default function SagavikHub() {
   return (
@@ -25,10 +26,17 @@ export default function SagavikHub() {
         />
         <ProjectTile
           href="/varverb"
-          tag="02 · Språk"
+          tag="02 · Verb"
           title="Vårverb"
           oneLiner="Swedish verb practice for the B1 list."
           art={<WatercolorVarverb />}
+        />
+        <ProjectTile
+          href="/glosor"
+          tag="03 · Glosor"
+          title="Glosor"
+          oneLiner="Swedish vocabulary flashcards."
+          art={<WatercolorGlosor />}
         />
       </div>
 
