@@ -33,6 +33,9 @@ export default function VarverbPage() {
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [wrongAttempt, setWrongAttempt] = useState<{ grade: GradeResult; attempt: string } | null>(null);
+  const [needsConfirm, setNeedsConfirm] = useState(false);
+  const [confirmInput, setConfirmInput] = useState("");
+  const [confirmError, setConfirmError] = useState<string | null>(null);
 
   useEffect(() => {
     setVerbs(loadVerbs());
@@ -56,6 +59,9 @@ export default function VarverbPage() {
     setChatHistory([]);
     setChatInput("");
     setWrongAttempt(null);
+    setNeedsConfirm(false);
+    setConfirmInput("");
+    setConfirmError(null);
     setLastVerb(verb.infinitive);
     try {
       const target_form = pickTargetForm(verb);
@@ -104,6 +110,9 @@ export default function VarverbPage() {
     setChatHistory([]);
     setChatInput("");
     setWrongAttempt(null);
+    setNeedsConfirm(false);
+    setConfirmInput("");
+    setConfirmError(null);
     setError(null);
   }
 
@@ -200,6 +209,22 @@ export default function VarverbPage() {
     const updated = recordPractice(activeVerb.infinitive, false);
     setVerbs(updated);
     setWrongAttempt(null);
+    // After revealing, gate Next verb behind typing the correct answer once.
+    setNeedsConfirm(true);
+    setConfirmInput("");
+    setConfirmError(null);
+  }
+
+  function confirmAnswer(e: React.FormEvent) {
+    e.preventDefault();
+    if (!grade) return;
+    const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+    if (normalize(confirmInput) === normalize(grade.corrected_swedish)) {
+      setNeedsConfirm(false);
+      setConfirmError(null);
+    } else {
+      setConfirmError("Doesn't match — check spelling and en/ett.");
+    }
   }
 
   async function speakSwedish(text: string) {
@@ -282,6 +307,11 @@ export default function VarverbPage() {
           chatHistory={chatHistory}
           chatInput={chatInput}
           chatLoading={chatLoading}
+          needsConfirm={needsConfirm}
+          confirmInput={confirmInput}
+          confirmError={confirmError}
+          onConfirmInput={setConfirmInput}
+          onConfirmSubmit={confirmAnswer}
           onChatInput={setChatInput}
           onChatSubmit={sendChat}
           onNext={nextRound}
@@ -465,6 +495,11 @@ function ResultCard({
   chatHistory,
   chatInput,
   chatLoading,
+  needsConfirm,
+  confirmInput,
+  confirmError,
+  onConfirmInput,
+  onConfirmSubmit,
   onChatInput,
   onChatSubmit,
   onNext,
@@ -480,6 +515,11 @@ function ResultCard({
   chatHistory: ChatMessage[];
   chatInput: string;
   chatLoading: boolean;
+  needsConfirm: boolean;
+  confirmInput: string;
+  confirmError: string | null;
+  onConfirmInput: (v: string) => void;
+  onConfirmSubmit: (e: React.FormEvent) => void;
   onChatInput: (v: string) => void;
   onChatSubmit: (e: React.FormEvent) => void;
   onNext: () => void;
@@ -512,25 +552,59 @@ function ResultCard({
         <button
           type="button"
           onClick={onSpeak}
-          className="flex-1 rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink shadow-card transition hover:border-ink/30 hover:shadow-cardHover"
+          className={`${needsConfirm ? "" : "flex-1"} rounded-full border border-ink/15 bg-white px-5 py-3 text-sm font-semibold text-ink shadow-card transition hover:border-ink/30 hover:shadow-cardHover`}
         >
           🔊 Hear it
         </button>
-        <button
-          type="button"
-          onClick={onNext}
-          disabled={loading}
-          className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-sea px-5 py-3 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover disabled:opacity-60"
-        >
-          {loading ? (
-            <>
-              <Spinner /> Loading…
-            </>
-          ) : (
-            "Next verb →"
-          )}
-        </button>
+        {!needsConfirm && (
+          <button
+            type="button"
+            onClick={onNext}
+            disabled={loading}
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-sea px-5 py-3 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <Spinner /> Loading…
+              </>
+            ) : (
+              "Next verb →"
+            )}
+          </button>
+        )}
       </div>
+
+      {needsConfirm && (
+        <div className="mx-auto mt-4 w-full max-w-md rounded-2xl border border-sea/30 bg-sea/5 p-4 animate-fadeIn">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-sea-600">
+            Type it once to continue
+          </p>
+          <form onSubmit={onConfirmSubmit} className="mt-3 flex gap-2">
+            <input
+              type="text"
+              value={confirmInput}
+              onChange={(e) => onConfirmInput(e.target.value)}
+              placeholder="Type the correct Swedish…"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              className="min-w-0 flex-1 rounded-full border border-ink/15 bg-white px-4 py-2.5 text-sm text-ink shadow-card placeholder:text-ink/35 focus:border-sea focus:outline-none focus:ring-2 focus:ring-sea/20"
+              autoFocus
+            />
+            <button
+              type="submit"
+              disabled={!confirmInput.trim()}
+              className="flex-none rounded-full bg-sea px-5 py-2.5 text-sm font-semibold tracking-wide text-white shadow-card transition hover:bg-sea-600 hover:shadow-cardHover disabled:opacity-60"
+            >
+              Confirm
+            </button>
+          </form>
+          {confirmError && (
+            <p className="mt-2 text-xs text-terra-600">{confirmError}</p>
+          )}
+        </div>
+      )}
 
       <div className="mt-3 text-center">
         <button
