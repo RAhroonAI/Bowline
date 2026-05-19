@@ -1,7 +1,7 @@
 {
-  "name": "Bowline",
-  "short_name": "Bowline",
-  "description": "The daily checklist for bareboat chartering",
+  "name": "Sagavik",
+  "short_name": "Sagavik",
+  "description": "A small workshop of personal projects.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",

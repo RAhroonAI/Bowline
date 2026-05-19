@@ -13,15 +13,16 @@ export default function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#C8694A",
-          color: "#FAF7F2",
+          background: "#FAF7F2",
+          color: "#1E3A5F",
           fontSize: 22,
           fontFamily: "Georgia, serif",
-          fontWeight: 700,
+          fontStyle: "italic",
+          fontWeight: 500,
           letterSpacing: -1,
         }}
       >
-        B
+        S
       </div>
     ),
     size
