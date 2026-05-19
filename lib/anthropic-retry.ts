@@ -49,6 +49,12 @@ export function friendlyAnthropicError(err: unknown): string {
   if (status === 503) {
     return "Anthropic is temporarily unavailable. Try again in a moment.";
   }
+  // For 4xx errors (bad model, tier issues, etc.) try to extract a usable
+  // message from the JSON body Anthropic returns.
+  const jsonMatch = raw.match(/\{.*"message"\s*:\s*"([^"]+)".*\}/);
+  if (jsonMatch) {
+    return `AI service error: ${jsonMatch[1]}`;
+  }
   // Strip "529 {...}" style prefixes by returning a generic message
   if (/^\d{3}\s/.test(raw)) {
     return "AI service returned an error. Try again.";
