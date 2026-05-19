@@ -22,18 +22,34 @@ function ensureFields(g: Partial<Glosa>): Glosa {
 
 export function loadGlosor(): Glosa[] {
   if (typeof window === "undefined") return [];
+
+  const seedGlosor = (seed as Partial<Glosa>[]).map(ensureFields);
+
+  let stored: Glosa[] = [];
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) {
-      const parsed = JSON.parse(raw) as Partial<Glosa>[];
-      return parsed.map(ensureFields);
+      stored = (JSON.parse(raw) as Partial<Glosa>[]).map(ensureFields);
     }
   } catch {
     // fall through to seed
   }
-  const fresh = (seed as Partial<Glosa>[]).map(ensureFields);
-  saveGlosor(fresh);
-  return fresh;
+
+  if (stored.length === 0) {
+    saveGlosor(seedGlosor);
+    return seedGlosor;
+  }
+
+  // Merge: add any new seed words that aren't already in localStorage.
+  // Existing rows keep their practice stats.
+  const storedEnglish = new Set(stored.map((g) => g.english));
+  const newOnes = seedGlosor.filter((g) => !storedEnglish.has(g.english));
+  if (newOnes.length > 0) {
+    const merged = [...stored, ...newOnes];
+    saveGlosor(merged);
+    return merged;
+  }
+  return stored;
 }
 
 export function saveGlosor(glosor: Glosa[]): void {

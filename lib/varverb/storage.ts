@@ -21,24 +21,41 @@ function ensureFields(v: Partial<Verb>): Verb {
 
 export function loadVerbs(): Verb[] {
   if (typeof window === "undefined") return [];
+
+  const seedVerbs = (seed as Partial<Verb>[]).map((v) =>
+    ensureFields({
+      ...v,
+      practice_count: 0,
+      correct_count: 0,
+      incorrect_count: 0,
+    }),
+  );
+
+  let stored: Verb[] = [];
   try {
     const raw = localStorage.getItem(KEY);
     if (raw) {
-      const parsed = JSON.parse(raw) as Partial<Verb>[];
-      return parsed.map(ensureFields);
+      stored = (JSON.parse(raw) as Partial<Verb>[]).map(ensureFields);
     }
   } catch {
     // fall through to seed
   }
-  // First-time visit: hydrate from the bundled seed list and persist.
-  const fresh = (seed as Partial<Verb>[]).map(ensureFields).map((v) => ({
-    ...v,
-    practice_count: 0,
-    correct_count: 0,
-    incorrect_count: 0,
-  }));
-  saveVerbs(fresh);
-  return fresh;
+
+  if (stored.length === 0) {
+    saveVerbs(seedVerbs);
+    return seedVerbs;
+  }
+
+  // Merge: add any new seed verbs that aren't already in localStorage.
+  // Preserves practice stats for existing rows; new words start at zero.
+  const storedInfs = new Set(stored.map((v) => v.infinitive));
+  const newOnes = seedVerbs.filter((v) => !storedInfs.has(v.infinitive));
+  if (newOnes.length > 0) {
+    const merged = [...stored, ...newOnes];
+    saveVerbs(merged);
+    return merged;
+  }
+  return stored;
 }
 
 export function saveVerbs(verbs: Verb[]): void {
