@@ -6,9 +6,13 @@ import { ArrowLeft, Sparkles } from "lucide-react";
 import {
   loadVerbs,
   pickNextVerb,
+  pickTargetForm,
+  pickTopic,
   recordPractice,
   setLastVerb,
   getLastVerb,
+  getRecentSentences,
+  rememberSentence,
 } from "@/lib/varverb/storage";
 import type { Verb, RoundSeed, GradeResult } from "@/lib/varverb/types";
 
@@ -47,16 +51,20 @@ export default function VarverbPage() {
       setActiveVerb(verb);
       setLastVerb(verb.infinitive);
 
+      const target_form = pickTargetForm(verb);
+      const topic = pickTopic();
+      const avoid = getRecentSentences();
       const res = await fetch("/varverb/api/sentence", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ verb }),
+        body: JSON.stringify({ verb, target_form, topic, avoid }),
       });
       if (!res.ok) {
         const data = (await res.json()) as { error?: string };
         throw new Error(data.error || `HTTP ${res.status}`);
       }
       const round = (await res.json()) as RoundSeed;
+      rememberSentence(round.english_sentence);
       setSeed(round);
       setUserInput("");
       setGrade(null);

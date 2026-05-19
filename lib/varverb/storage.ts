@@ -81,3 +81,68 @@ export function pickNextVerb(verbs: Verb[], lastInfinitive: string | null): Verb
   const top = scored.slice(0, window);
   return top[Math.floor(Math.random() * top.length)];
 }
+
+const ALL_FORMS = [
+  "infinitive",
+  "presens",
+  "preteritum",
+  "supinum",
+  "perfekt_particip",
+] as const;
+
+export function pickTargetForm(verb: Verb): typeof ALL_FORMS[number] {
+  const available = ALL_FORMS.filter((f) => {
+    const v = verb[f];
+    return typeof v === "string" && v.trim() !== "" && v.trim() !== "-";
+  });
+  if (available.length === 0) return "presens";
+  return available[Math.floor(Math.random() * available.length)];
+}
+
+const TOPICS = [
+  "morning routine at home",
+  "weather and seasons",
+  "a meal with family",
+  "commuting and transport",
+  "shopping or errands",
+  "a phone call with a friend",
+  "weekend plans",
+  "feeling tired or surprised",
+  "a small problem at work",
+  "what someone did yesterday",
+  "what someone is doing right now",
+  "an everyday object getting broken or fixed",
+  "asking for directions or help",
+  "a child or a pet",
+  "school or studying",
+  "cooking or making coffee",
+  "a walk in the city",
+  "packing or unpacking",
+  "the train, the bus, or the car",
+  "a small disagreement",
+];
+
+export function pickTopic(): string {
+  return TOPICS[Math.floor(Math.random() * TOPICS.length)];
+}
+
+const SEEN_KEY = "varverb.seenSentences.v1";
+const MAX_SEEN = 30;
+
+export function getRecentSentences(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(SEEN_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw) as string[];
+  } catch {
+    return [];
+  }
+}
+
+export function rememberSentence(sentence: string): void {
+  if (typeof window === "undefined") return;
+  const prev = getRecentSentences();
+  const next = [sentence, ...prev.filter((s) => s !== sentence)].slice(0, MAX_SEEN);
+  localStorage.setItem(SEEN_KEY, JSON.stringify(next));
+}

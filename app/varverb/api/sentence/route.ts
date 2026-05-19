@@ -1,13 +1,19 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
-import type { Verb, RoundSeed } from "@/lib/varverb/types";
+import type { Verb, RoundSeed, TargetForm } from "@/lib/varverb/types";
 
 const MODEL = "claude-sonnet-4-6";
 
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
-  const { verb } = (await req.json()) as { verb: Verb };
+  const body = (await req.json()) as {
+    verb: Verb;
+    target_form?: TargetForm;
+    topic?: string;
+    avoid?: string[];
+  };
+  const { verb, target_form, topic, avoid } = body;
   if (!verb || !verb.infinitive) {
     return NextResponse.json({ error: "Missing verb" }, { status: 400 });
   }
@@ -22,6 +28,21 @@ export async function POST(req: Request) {
 
   const client = new Anthropic({ apiKey });
 
+  const formDirective = target_form
+    ? `\nThe target form for this round is: **${target_form}**. Build the sentence so its Swedish translation requires that exact form.`
+    : `\nPick the target form yourself, but vary across calls — don't always pick the same one.`;
+
+  const topicDirective = topic
+    ? `\nUse the topic: **${topic}**. The sentence should clearly involve this subject matter.`
+    : "";
+
+  const avoidDirective =
+    avoid && avoid.length > 0
+      ? `\n\nIMPORTANT — DO NOT produce any of these sentences (or anything that paraphrases them). Write something genuinely different:\n${avoid
+          .map((s) => `- ${s}`)
+          .join("\n")}`
+      : "";
+
   const prompt =
     `Create an English sentence whose Swedish translation requires a ` +
     `specific conjugation form of the verb '${verb.infinitive}'.\n\n` +
@@ -30,23 +51,24 @@ export async function POST(req: Request) {
     `- presens (present): ${verb.presens}\n` +
     `- preteritum (past): ${verb.preteritum}\n` +
     `- supinum (used with har/hade for perfect tenses): ${verb.supinum}\n` +
-    `- perfekt_particip (used as adjective): ${verb.perfekt_particip}\n\n` +
-    `STRICT REQUIREMENTS:\n` +
-    `- Level: B1 (intermediate). Both the English AND the resulting Swedish ` +
-    `  must be at B1. No higher.\n` +
-    `- Vocabulary: only common everyday words. NO abstract nouns, NO idioms, ` +
-    `  NO literary phrasing.\n` +
-    `- Topics: daily life — food, family, work, home, weather, transport, ` +
-    `  shopping, hobbies, friends, simple feelings, school. NOTHING abstract.\n` +
+    `- perfekt_particip (used as adjective): ${verb.perfekt_particip}\n` +
+    formDirective +
+    topicDirective +
+    `\n\nSTRICT REQUIREMENTS:\n` +
+    `- Level: B1 (intermediate). Both the English AND the resulting Swedish must be at B1. No higher.\n` +
+    `- Vocabulary: only common everyday words. NO abstract nouns, NO idioms, NO literary phrasing.\n` +
     `- Length: 5–10 words. Simple grammar.\n` +
-    `- Pick the target form by varying across calls. Skip a form whose value is empty.\n\n` +
-    `GOOD style: 'I drank coffee this morning.' 'She has lived here for two years.'\n` +
-    `BAD style (do NOT produce anything like these): 'The bitter medicine without complaining.' 'He pondered the meaning of suffering.'`;
+    `- Vary subject, time, and setting from typical example sentences. Be specific and concrete.\n\n` +
+    `GOOD style: 'I drank coffee this morning.' 'She has lived here for two years.' 'We took the bus yesterday.'\n` +
+    `BAD style (do NOT produce anything like these): 'The bitter medicine without complaining.' 'He pondered the meaning of suffering.'` +
+    avoidDirective;
 
   try {
     const response = await client.messages.create({
       model: MODEL,
       max_tokens: 600,
+      // Higher temperature to encourage variety across calls
+      temperature: 1.0,
       tools: [
         {
           name: "create_practice_sentence",
