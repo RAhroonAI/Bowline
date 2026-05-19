@@ -3,7 +3,7 @@ import { callAnthropicWithRetry, friendlyAnthropicError } from "@/lib/anthropic-
 import { NextResponse } from "next/server";
 import type { Verb, RoundSeed, TargetForm } from "@/lib/varverb/types";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-opus-4-7";
 
 export const runtime = "nodejs";
 
@@ -45,8 +45,13 @@ export async function POST(req: Request) {
       : "";
 
   const prompt =
-    `Write ONE simple English sentence for a Swedish learner at A2–B1 level. ` +
-    `The Swedish translation must require a specific conjugation of the verb '${verb.infinitive}'.\n\n` +
+    `You are writing a translation exercise for a Swedish learner at LATE A2 / ` +
+    `EARLY B1 level. They are still learning basic everyday vocabulary. Write ONE ` +
+    `very simple English sentence whose Swedish translation requires a specific ` +
+    `conjugation of the verb '${verb.infinitive}'.\n\n` +
+    `Imagine you are writing the example sentences in a beginner-friendly Swedish ` +
+    `textbook for adults. Sentences must be short, plain, and instantly translatable ` +
+    `by someone with a 1500-word vocabulary.\n\n` +
     `Verb forms:\n` +
     `- infinitive: ${verb.infinitive}\n` +
     `- presens: ${verb.presens}\n` +
@@ -57,17 +62,24 @@ export async function POST(req: Request) {
     topicDirective +
     `\n\nVERY STRICT RULES — DO NOT BREAK ANY OF THESE:\n` +
     `- Length: 4–8 words. Short sentences only.\n` +
-    `- Use only common everyday English words. No big words, no formal vocabulary, ` +
-    `no idioms, no figurative language. If a word isn't in basic A2 textbook English, don't use it.\n` +
-    `- Grammar: simple present, simple past, or present perfect ONLY. ` +
-    `No conditionals, no "if/then", no passive voice, no subjunctive, no modal stacking ` +
-    `("might have been"), no participial phrases.\n` +
+    `- Vocabulary: ONLY the most common everyday English words. If a word is longer ` +
+    `than 8 letters and isn't a proper noun, find a simpler one. Reject any word a ` +
+    `Swedish 14-year-old wouldn't have learned in their first English textbook.\n` +
+    `- No idioms, no figurative language, no two-part verbs in fancy senses, no formal ` +
+    `vocabulary (no "perceive", "obtain", "regard", "approach", "spread the map" — ` +
+    `instead use "see", "get", "look at", "go to", "put the map down").\n` +
+    `- Grammar: simple present, simple past, or present perfect ONLY. No conditionals, ` +
+    `no "if/then", no passive voice, no subjunctive, no modal stacking ("might have been"), ` +
+    `no participial phrases.\n` +
     `- Subjects: prefer "I", "she", "he", "we", "they", "my friend", "the kids", or a ` +
     `simple name. Avoid abstract subjects like "the system", "patience", "this idea".\n` +
     `- Topics: concrete daily life — making coffee, taking the bus, calling a friend, ` +
     `eating dinner, washing dishes, walking to school, missing the train, getting tired. ` +
     `NEVER use abstract concepts (justice, freedom, meaning, society, success, etc.).\n` +
-    `- Be specific, not philosophical.\n\n` +
+    `- Be specific, not philosophical.\n` +
+    `- If the verb you're testing is rare or unusual and forces a B2+ sentence, write ` +
+    `the simplest possible context for it even if slightly stilted. A plain awkward ` +
+    `sentence is better than a smooth complex one.\n\n` +
     `EXAMPLES of the EXACT register I want — match this complexity, not higher:\n` +
     `- "I drank coffee this morning."\n` +
     `- "She is tired today."\n` +
@@ -102,9 +114,10 @@ export async function POST(req: Request) {
     const response = await callAnthropicWithRetry(() => client.messages.create({
       model: MODEL,
       max_tokens: 600,
-      // Moderate temperature: enough variety, but not enough to drift into
-      // higher-register sentences. Topic seeds carry most of the variety load.
-      temperature: 0.7,
+      // Low temperature: prioritize sticking to the simplicity rules over
+      // creative variety. Topic seeds + Opus's strong instruction following
+      // carry the variety load.
+      temperature: 0.5,
       tools: [
         {
           name: "create_practice_sentence",
