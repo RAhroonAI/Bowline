@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import type { Verb, RoundSeed, GradeResult } from "@/lib/varverb/types";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-haiku-4-5";
 
 export const runtime = "nodejs";
 
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
   try {
     const response = await client.messages.create({
       model: MODEL,
-      max_tokens: 1500,
+      max_tokens: 800,
       tools: [
         {
           name: "grade_swedish_translation",

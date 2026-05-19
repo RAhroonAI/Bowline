@@ -97,6 +97,26 @@ export default function GlosorPage() {
     const attempt = userInput.trim();
     if (!attempt || !active) return;
     setError(null);
+
+    // Fast path: if the answer matches exactly (case- and whitespace-
+    // insensitive), mark correct instantly without calling the AI.
+    const normalize = (s: string) => s.toLowerCase().replace(/\s+/g, " ").trim();
+    if (normalize(attempt) === normalize(active.swedish)) {
+      const fastGrade: WordGradeResult = {
+        is_correct: true,
+        corrected_swedish: active.swedish,
+        explanation: "Spot on.",
+        word_explanation: "",
+      };
+      setGrade(fastGrade);
+      setUserInput(attempt);
+      setWrongAttempt(null);
+      setStage("graded");
+      const updated = recordGlosaPractice(active.english, true);
+      setGlosor(updated);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/glosor/api/grade", {

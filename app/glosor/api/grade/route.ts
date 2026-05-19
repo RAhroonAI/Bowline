@@ -2,7 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 import type { Glosa, WordGradeResult } from "@/lib/glosor/types";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-haiku-4-5";
 
 export const runtime = "nodejs";
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
   try {
     const response = await client.messages.create({
       model: MODEL,
-      max_tokens: 800,
+      max_tokens: 600,
       temperature: 0.3,
       tools: [
         {
