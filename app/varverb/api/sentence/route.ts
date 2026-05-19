@@ -93,12 +93,22 @@ export async function POST(req: Request) {
     `- "Patience is a virtue rarely found."\n` +
     `- "Despite the obstacles, she persevered."\n` +
     `- "Had they known, things would be different."\n\n` +
-    `CRITICAL — semantic and orthographic accuracy:\n` +
-    `- The English verb you use must DIRECTLY mean the Swedish verb. Don't substitute ` +
-    `a near-synonym in English. For example: 'sjunken' (perfekt particip of 'sjunka') ` +
-    `means SUNK or SUNKEN, NOT 'broken'. If you can't make a natural B1 sentence with ` +
-    `the verb's literal English meaning, pick a different verb form to test rather than ` +
-    `produce a wrong-meaning sentence.\n` +
+    `CRITICAL — semantic accuracy and unambiguous mapping:\n` +
+    `- FIRST, identify the SPECIFIC English meaning of '${verb.infinitive}'. ` +
+    `Many Swedish verbs (especially "svåra verb") have narrow or colloquial meanings ` +
+    `that differ from the most common English translation. Examples:\n` +
+    `  · 'supa' = to drink ALCOHOL / get drunk — NOT generic drink (that's 'dricka').\n` +
+    `  · 'snyta' = to blow one's NOSE — not generic blow.\n` +
+    `  · 'slita' = to wear out (clothing, shoes, things from repeated use) — not "break".\n` +
+    `  · 'sjunken' = SUNK or SUNKEN — not "broken".\n` +
+    `  · 'svida' = to sting/burn (a wound, eyes from smoke) — not "hurt" in general.\n` +
+    `- SECOND, write an English sentence where that SPECIFIC meaning is the ONLY natural ` +
+    `interpretation. "He has drunk on the train" is BAD for 'supa' because it could just ` +
+    `mean he drank water. "He got drunk on the train" or "He has been drinking on the train" ` +
+    `is GOOD — clearly alcohol.\n` +
+    `- If the verb is too colloquial or specific to make a clean B1 English sentence, ` +
+    `prefer a slightly stilted-but-clear sentence over a smooth-but-ambiguous one. ` +
+    `Awkward + correct > smooth + wrong.\n` +
     `- Before you finalize, re-read your Swedish translation as if you were a Swedish ` +
     `teacher proofreading a student. Check every word for spelling, gender (en/ett), ` +
     `definite/indefinite forms, and silent letters (e.g. "gångvägen" not "gånvägen", ` +
