@@ -3,7 +3,7 @@ import { callAnthropicWithRetry, friendlyAnthropicError } from "@/lib/anthropic-
 import { NextResponse } from "next/server";
 import type { Verb, RoundSeed, TargetForm } from "@/lib/varverb/types";
 
-const MODEL = "claude-sonnet-4-6";
+const MODEL = "claude-opus-4-7";
 
 export const runtime = "nodejs";
 
@@ -81,13 +81,21 @@ export async function POST(req: Request) {
     `- "Patience is a virtue rarely found."\n` +
     `- "Despite the obstacles, she persevered."\n` +
     `- "Had they known, things would be different."\n\n` +
-    `CRITICAL — Swedish accuracy:\n` +
+    `CRITICAL — semantic and orthographic accuracy:\n` +
+    `- The English verb you use must DIRECTLY mean the Swedish verb. Don't substitute ` +
+    `a near-synonym in English. For example: 'sjunken' (perfekt particip of 'sjunka') ` +
+    `means SUNK or SUNKEN, NOT 'broken'. If you can't make a natural B1 sentence with ` +
+    `the verb's literal English meaning, pick a different verb form to test rather than ` +
+    `produce a wrong-meaning sentence.\n` +
     `- Before you finalize, re-read your Swedish translation as if you were a Swedish ` +
     `teacher proofreading a student. Check every word for spelling, gender (en/ett), ` +
     `definite/indefinite forms, and silent letters (e.g. "gångvägen" not "gånvägen", ` +
     `"någon" not "nån" in writing, "och" not "ock").\n` +
     `- If you're uncertain a Swedish word is spelled correctly, choose a simpler word ` +
-    `you're sure of. Better a plain sentence than one with a typo.` +
+    `you're sure of. Better a plain sentence than one with a typo.\n` +
+    `- Sanity check: read your English sentence and your Swedish translation side by ` +
+    `side. The verb in the English MUST mean the same thing as the Swedish verb form. ` +
+    `If they don't match exactly in meaning, rewrite.` +
     avoidDirective;
 
   try {
