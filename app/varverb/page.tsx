@@ -116,12 +116,14 @@ export default function VarverbPage() {
     setError(null);
   }
 
-  function speakSwedish(text: string) {
+  async function speakSwedish(text: string) {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
+    const voice = await getSwedishVoice();
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "sv-SE";
     utterance.rate = 0.95;
+    if (voice) utterance.voice = voice;
     window.speechSynthesis.speak(utterance);
   }
 
@@ -473,6 +475,47 @@ function MarkdownText({ text }: { text: string }) {
   }
   if (lastIndex < text.length) parts.push(text.slice(lastIndex));
   return <p>{parts}</p>;
+}
+
+// Voice loading is async in some browsers. Cache the selected voice
+// across speakSwedish calls so it doesn't fall back to the default
+// (often English) voice on subsequent calls.
+let cachedSwedishVoice: SpeechSynthesisVoice | null | undefined = undefined;
+
+async function getSwedishVoice(): Promise<SpeechSynthesisVoice | null> {
+  if (cachedSwedishVoice !== undefined) return cachedSwedishVoice;
+  if (typeof window === "undefined" || !window.speechSynthesis) {
+    cachedSwedishVoice = null;
+    return null;
+  }
+
+  let voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) {
+    // Voices not yet loaded — wait for the voiceschanged event (max 1 second)
+    voices = await new Promise<SpeechSynthesisVoice[]>((resolve) => {
+      const timeout = setTimeout(() => {
+        resolve(window.speechSynthesis.getVoices());
+      }, 1000);
+      window.speechSynthesis.addEventListener(
+        "voiceschanged",
+        () => {
+          clearTimeout(timeout);
+          resolve(window.speechSynthesis.getVoices());
+        },
+        { once: true },
+      );
+    });
+  }
+
+  // Prefer Swedish, then prefer local (higher-quality) voices.
+  const swedish = voices.filter((v) => v.lang.toLowerCase().startsWith("sv"));
+  if (swedish.length === 0) {
+    cachedSwedishVoice = null;
+    return null;
+  }
+  const local = swedish.find((v) => v.localService);
+  cachedSwedishVoice = local || swedish[0];
+  return cachedSwedishVoice;
 }
 
 function Spinner() {
