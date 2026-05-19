@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { callAnthropicWithRetry, friendlyAnthropicError } from "@/lib/anthropic-retry";
 import { NextResponse } from "next/server";
 import type { Verb, RoundSeed, GradeResult } from "@/lib/varverb/types";
 
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
     `patterns. Use markdown for Swedish examples.`;
 
   try {
-    const response = await client.messages.create({
+    const response = await callAnthropicWithRetry(() => client.messages.create({
       model: MODEL,
       max_tokens: 800,
       tools: [
@@ -77,7 +78,7 @@ export async function POST(req: Request) {
       ],
       tool_choice: { type: "tool", name: "grade_swedish_translation" },
       messages: [{ role: "user", content: prompt }],
-    });
+    }));
 
     for (const block of response.content) {
       if (block.type === "tool_use") {
@@ -89,7 +90,6 @@ export async function POST(req: Request) {
       { status: 500 },
     );
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: friendlyAnthropicError(err) }, { status: 500 });
   }
 }

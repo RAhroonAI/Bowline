@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { callAnthropicWithRetry, friendlyAnthropicError } from "@/lib/anthropic-retry";
 import { NextResponse } from "next/server";
 import type { Glosa, WordGradeResult } from "@/lib/glosor/types";
 
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
     `phrases, etymology, pronunciation, or anything else the student asks.`;
 
   try {
-    const response = await client.messages.create({
+    const response = await callAnthropicWithRetry(() => client.messages.create({
       model: MODEL,
       max_tokens: 800,
       system,
@@ -55,14 +56,13 @@ export async function POST(req: Request) {
         ...history.map((m) => ({ role: m.role, content: m.content })),
         { role: "user" as const, content: question },
       ],
-    });
+    }));
 
     const text = response.content
       .map((block) => (block.type === "text" ? block.text : ""))
       .join("");
     return NextResponse.json({ answer: text });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: friendlyAnthropicError(err) }, { status: 500 });
   }
 }
